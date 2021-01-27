@@ -2,6 +2,25 @@
 
 A CLI for airfoil.
 
+## Installation
+
+Clone this repo to your machine, then run:
+
+```
+yarn install
+yarn link
+```
+
+## Usage
+
+```
+airfoil <CMD>
+```
+
+[See available commands here](./docs/commands.md).
+
+---
+
 ## Customizing your CLI
 
 Check out the documentation at https://github.com/infinitered/gluegun/tree/master/docs.
@@ -22,4 +41,3 @@ $ npm publish
 # License
 
 MIT - see LICENSE
-
