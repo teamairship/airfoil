@@ -1,41 +1,57 @@
 import { GluegunCommand } from 'gluegun';
 import { Toolbox } from 'gluegun/build/types/domain/toolbox';
+import { Options } from '../types';
 import {
   REACT_NATIVE_INIT,
   TEMPLATE,
   blimpDependencies,
-  projectNameQuestion,
-  projectTypeQuestion,
-  TEMPLATE_CHOICE_BLIMP,
-  TEMPLATE_CHOICE_PROP,
-  TEMPLATE_CHOICE_JET,
+  questionProjectName,
+  questionProjectType,
+  CHOICE_TEMPLATE_BLIMP,
+  CHOICE_TEMPLATE_PROP,
+  CHOICE_TEMPLATE_JET,
+  questionBuildDirectoryStructure,
+  CHOICE_YES,
 } from '../utils/constants';
+import { buildProjectDirectoryStructure } from '../utils/filesystemGenerators';
 
 const command: GluegunCommand = {
   name: 'new',
   alias: 'n',
   run: async toolbox => {
-    const { parameters, print, prompt } = toolbox;
+    const { parameters, print, prompt, filesystem } = toolbox;
 
     let projectName: string;
 
     if (parameters.first) {
       projectName = parameters.first;
     } else {
-      const { name } = await prompt.ask([projectNameQuestion]);
+      const { name } = await prompt.ask([questionProjectName]);
       projectName = name;
     }
 
-    const { type } = await prompt.ask([projectTypeQuestion]);
+    if (filesystem.exists(projectName)) {
+      print.error(`${filesystem.cwd()}${filesystem.separator}${projectName} already exists!`);
+      process.exit(1);
+    }
+
+    const { type } = await prompt.ask([questionProjectType]);
+
+    const { buildDirectoryStructure } = await prompt.ask([questionBuildDirectoryStructure]);
+    const shouldBuildDirectoryStructure = buildDirectoryStructure === CHOICE_YES;
+
+    const opts: Options = {
+      shouldBuildDirectoryStructure,
+    };
 
     switch (type) {
-      case TEMPLATE_CHOICE_BLIMP:
-        return createBlimpProject(toolbox, projectName);
+      case CHOICE_TEMPLATE_BLIMP:
+        return createBlimpProject(toolbox, projectName, opts);
 
-      case TEMPLATE_CHOICE_PROP:
+      case CHOICE_TEMPLATE_PROP:
         return print.info('Coming soon!');
 
-      case TEMPLATE_CHOICE_JET:
+      case CHOICE_TEMPLATE_JET:
         return print.info('Coming soon!');
 
       default:
@@ -44,7 +60,7 @@ const command: GluegunCommand = {
   },
 };
 
-const createBlimpProject = async (toolbox: Toolbox, projectName: string) => {
+const createBlimpProject = async (toolbox: Toolbox, projectName: string, opts: Options) => {
   const { print, system } = toolbox;
   const dependencies = blimpDependencies.reduce((acc, item) => `${acc} ${item}`);
 
@@ -62,6 +78,28 @@ const createBlimpProject = async (toolbox: Toolbox, projectName: string) => {
   const installPodsSpinner = print.spin('Installing pods...');
   await system.run(`cd ${projectName}/ios && pod install && cd ../`);
   installPodsSpinner.stop();
+
+  // Build directory structure
+  if (opts.shouldBuildDirectoryStructure) {
+    const createSpinner = print.spin('Generating directory structure...');
+    buildProjectDirectoryStructure({
+      toolbox,
+      projectName,
+      appRootPath: 'app',
+      subDirectories: [
+        'assets',
+        'components',
+        'context',
+        'hooks',
+        'navigation',
+        'screens',
+        'services',
+        'styles',
+        'utils',
+      ],
+    });
+    createSpinner.stop();
+  }
 
   print.success(`${projectName} has been created!`);
 };

@@ -14,19 +14,29 @@ export const blimpDependencies: string[] = [
   'react-native-screens',
 ];
 
-export const projectNameQuestion = {
+export const questionProjectName = {
   type: 'input',
   name: 'name',
   message: 'What would you like to name the project? (Must be camel case): ',
 };
 
-export const TEMPLATE_CHOICE_BLIMP = 'Blimp: React Context + REST';
-export const TEMPLATE_CHOICE_PROP = 'Propeller: Redux + REST';
-export const TEMPLATE_CHOICE_JET = 'Jet: GraphQL + Apollo State';
+export const CHOICE_TEMPLATE_BLIMP = 'Blimp: React Context + REST';
+export const CHOICE_TEMPLATE_PROP = 'Propeller: Redux + REST';
+export const CHOICE_TEMPLATE_JET = 'Jet: GraphQL + Apollo State';
 
-export const projectTypeQuestion = {
+export const questionProjectType = {
   type: 'select',
   name: 'type',
   message: 'Which template would you like to use?',
-  choices: [TEMPLATE_CHOICE_BLIMP, TEMPLATE_CHOICE_PROP, TEMPLATE_CHOICE_JET],
+  choices: [CHOICE_TEMPLATE_BLIMP, CHOICE_TEMPLATE_PROP, CHOICE_TEMPLATE_JET],
+};
+
+export const CHOICE_YES = 'Yes';
+export const CHOICE_NO = 'No';
+
+export const questionBuildDirectoryStructure = {
+  type: 'select',
+  name: 'buildDirectoryStructure',
+  message: 'Auto-generate Airship-recommended React Native directory structure?',
+  choices: [CHOICE_YES, CHOICE_NO],
 };

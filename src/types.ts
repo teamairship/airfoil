@@ -1,1 +1,3 @@
-// export types
+export type Options = {
+  shouldBuildDirectoryStructure: boolean;
+};
