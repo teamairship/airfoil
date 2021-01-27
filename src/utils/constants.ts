@@ -20,13 +20,13 @@ export const projectNameQuestion = {
   message: 'What would you like to name the project? (Must be camel case): ',
 };
 
+export const TEMPLATE_CHOICE_BLIMP = 'Blimp: React Context + REST';
+export const TEMPLATE_CHOICE_PROP = 'Propeller: Redux + REST';
+export const TEMPLATE_CHOICE_JET = 'Jet: GraphQL + Apollo State';
+
 export const projectTypeQuestion = {
   type: 'select',
   name: 'type',
   message: 'Which template would you like to use?',
-  choices: [
-    'Blimp: React Context + REST',
-    'Propeller: Redux + REST',
-    'Jet: GraphQL + Apollo State',
-  ],
+  choices: [TEMPLATE_CHOICE_BLIMP, TEMPLATE_CHOICE_PROP, TEMPLATE_CHOICE_JET],
 };

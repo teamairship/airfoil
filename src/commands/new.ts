@@ -6,6 +6,9 @@ import {
   blimpDependencies,
   projectNameQuestion,
   projectTypeQuestion,
+  TEMPLATE_CHOICE_BLIMP,
+  TEMPLATE_CHOICE_PROP,
+  TEMPLATE_CHOICE_JET,
 } from '../utils/constants';
 
 const command: GluegunCommand = {
@@ -26,17 +29,17 @@ const command: GluegunCommand = {
     const { type } = await prompt.ask([projectTypeQuestion]);
 
     switch (type) {
-      case 'Blimp: React Context + REST':
+      case TEMPLATE_CHOICE_BLIMP:
         return createBlimpProject(toolbox, projectName);
 
-      case 'Propeller: Redux + REST':
+      case TEMPLATE_CHOICE_PROP:
         return print.info('Coming soon!');
 
-      case 'Jet: GraphQL + Apollo State':
+      case TEMPLATE_CHOICE_JET:
         return print.info('Coming soon!');
 
       default:
-        return;
+        throw new Error('Project type not recognized');
     }
   },
 };
