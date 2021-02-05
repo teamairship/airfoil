@@ -1,8 +1,8 @@
 {
-  "name": "airfoil",
+  "name": "@airship/airfoil",
   "version": "0.0.1",
   "description": "airfoil CLI",
-  "private": true,
+  "private": false,
   "types": "build/types/types.d.ts",
   "bin": {
     "airfoil": "bin/airfoil"
@@ -54,5 +54,22 @@
     "singleQuote": true,
     "printWidth": 100,
     "trailingComma": "all"
-  }
+  },
+  "main": "./bin/airfoil",
+  "directories": {
+    "doc": "docs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/teamairship/airfoil.git"
+  },
+  "keywords": [
+    "boilerplate",
+    "react-native"
+  ],
+  "author": "Mark Kozlowski",
+  "bugs": {
+    "url": "https://github.com/teamairship/airfoil/issues"
+  },
+  "homepage": "https://github.com/teamairship/airfoil#readme"
 }
