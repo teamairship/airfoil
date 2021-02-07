@@ -1,0 +1,33 @@
+import { BeforeSend, Client, Report } from 'bugsnag-react-native';
+import { BUGSNAG_API_KEY } from '<%= props.importPaths.constants %>';
+
+const _NOOP = () => {};
+let _bugsnag: Client;
+
+// eslint-disable-next-line no-constant-condition
+if (__DEV__) {
+  _bugsnag = {
+    notify: (err: Error, beforeSendCallback?: BeforeSend) => {
+      console.error(err);
+      if (beforeSendCallback) {
+        const event = new Report(null, err);
+        beforeSendCallback(event);
+        console.error(event);
+      }
+    },
+    // @ts-ignore
+    config: _NOOP,
+    setUser: _NOOP,
+    clearUser: _NOOP,
+    startSession: _NOOP,
+    stopSession: _NOOP,
+    resumeSession: _NOOP,
+    enableConsoleBreadcrumbs: _NOOP,
+    disableConsoleBreadCrumbs: _NOOP,
+    leaveBreadcrumb: _NOOP,
+  };
+} else {
+  _bugsnag = new Client(BUGSNAG_API_KEY);
+}
+
+export const bugsnag = _bugsnag;

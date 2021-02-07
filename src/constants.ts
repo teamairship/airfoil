@@ -1,5 +1,7 @@
 export const REACT_NATIVE_INIT = 'npx react-native init';
-export const TEMPLATE = '--template react-native-template-typescript';
+export const REACT_NATIVE_TEMPLATE = '--template react-native-template-typescript';
+
+export const APP_ROOT_PATH = 'app';
 
 export const blimpDependencies: string[] = [
   '@react-native-community/masked-view',

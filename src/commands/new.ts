@@ -3,7 +3,7 @@ import { Toolbox } from 'gluegun/build/types/domain/toolbox';
 import { Options } from '../types';
 import {
   REACT_NATIVE_INIT,
-  TEMPLATE,
+  REACT_NATIVE_TEMPLATE,
   blimpDependencies,
   questionProjectName,
   questionProjectType,
@@ -12,8 +12,9 @@ import {
   CHOICE_TEMPLATE_JET,
   questionBuildDirectoryStructure,
   CHOICE_YES,
-} from '../utils/constants';
-import { buildProjectDirectoryStructure } from '../utils/filesystemGenerators';
+  APP_ROOT_PATH,
+} from '../constants';
+import { buildProjectDirectoryStructure, generateFiles } from '../utils/filesystemGenerators';
 
 const command: GluegunCommand = {
   name: 'new',
@@ -66,7 +67,7 @@ const createBlimpProject = async (toolbox: Toolbox, projectName: string, opts: O
 
   // Create React Native project
   const createSpinner = print.spin('Creating your React Native Project...');
-  await system.run(`${REACT_NATIVE_INIT} ${projectName} ${TEMPLATE}`);
+  await system.run(`${REACT_NATIVE_INIT} ${projectName} ${REACT_NATIVE_TEMPLATE}`);
   createSpinner.stop();
 
   // Install Dependencies
@@ -82,7 +83,7 @@ const createBlimpProject = async (toolbox: Toolbox, projectName: string, opts: O
   // Build directory structure
   if (opts.shouldBuildDirectoryStructure) {
     const createSpinner = print.spin('Generating directory structure...');
-    buildProjectDirectoryStructure({
+    await buildProjectDirectoryStructure({
       toolbox,
       projectName,
       appRootPath: 'app',
@@ -96,6 +97,27 @@ const createBlimpProject = async (toolbox: Toolbox, projectName: string, opts: O
         'services',
         'styles',
         'utils',
+      ],
+    });
+    await generateFiles({
+      toolbox,
+      projectName,
+      appRootPath: APP_ROOT_PATH,
+      templates: [
+        {
+          template: 'constants.ts.ejs',
+          target: `constants.ts`,
+          props: {},
+        },
+        {
+          template: 'services/bugsnag.ts.ejs',
+          target: `services/bugsnag.ts`,
+          props: {
+            importPaths: {
+              constants: '../constants',
+            },
+          },
+        },
       ],
     });
     createSpinner.stop();
