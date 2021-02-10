@@ -1,12 +1,6 @@
 import { GluegunCommand } from 'gluegun';
 import { Toolbox } from 'gluegun/build/types/domain/toolbox';
-import {
-  REACT_NATIVE_INIT,
-  TEMPLATE,
-  blimpDependencies,
-  projectNameQuestion,
-  projectTypeQuestion,
-} from '../utils/constants';
+import { projectNameQuestion, projectTypeQuestion } from '../utils/constants';
 
 const command: GluegunCommand = {
   name: 'new',
@@ -43,16 +37,30 @@ const command: GluegunCommand = {
 
 const createBlimpProject = async (toolbox: Toolbox, projectName: string) => {
   const { print, system } = toolbox;
-  const dependencies = blimpDependencies.reduce((acc, item) => `${acc} ${item}`);
 
   // Create React Native project
   const createSpinner = print.spin('Creating your React Native Project...');
-  await system.run(`${REACT_NATIVE_INIT} ${projectName} ${TEMPLATE}`);
+  await system.run('git clone git@github.com:teamairship/airfoil-template-blimp.git');
+  await system.run(`mv airfoil-template-blimp ${projectName}`);
+
+  // TODO: update the following script to deeply rename the entire project (i.e.,
+  // index.ios.js, android folder names, etc.). There's a tool called react-native-rename
+  // that we could possibly use here.
+  await system.run(`sed -i '' s/blimp/${projectName}/ ${projectName}/package.json`);
   createSpinner.stop();
+
+  // Initialize git repository
+  const gitSpinner = print.spin('Creating your React Native Project...');
+  await system.run(`cd ${projectName}`);
+  await system.run(`rm -rf .git`);
+  await system.run(`git init && git checkout -b main`);
+  await system.run(`git add . && git commit -m "initial commit"`);
+  await system.run(`cd ../`);
+  gitSpinner.stop();
 
   // Install Dependencies
   const installDependenciesSpinner = print.spin('Installing project dependencies');
-  await system.run(`cd ${projectName} && yarn add ${dependencies} && cd ../`);
+  await system.run(`cd ${projectName} && yarn && cd ../`);
   installDependenciesSpinner.stop();
 
   // Install Pods

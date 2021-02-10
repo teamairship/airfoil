@@ -19,7 +19,10 @@ $ npm test
 $ npm publish
 ```
 
+## Steps for Adding a New Template
+
+add some steps here...
+
 # License
 
 MIT - see LICENSE
-
