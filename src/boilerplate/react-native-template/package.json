@@ -1,0 +1,30 @@
+{
+  "name": "react-native-template-airfoil-base",
+  "version": "0.0.1",
+  "description": "Airship opinionated React Native boilerplate",
+  "scripts": {
+    "test": "exit 0",
+    "prepublishOnly": "npm --no-git-tag-version version $TRAVIS_TAG"
+  },
+  "files": [
+    "template",
+    "template.config.js"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/teamairship/airfoil"
+  },
+  "keywords": [
+    "react-native",
+    "typescript",
+    "jest",
+    "template",
+    "boilerplate"
+  ],
+  "author": "Airship <builders@airship.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/teamairship/airfoil/issues"
+  },
+  "homepage": "https://github.com/teamairship/airfoil#readme"
+}
