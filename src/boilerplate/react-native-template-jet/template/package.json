@@ -1,0 +1,62 @@
+{
+  "name": "HelloWorld",
+  "description": "",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "xcode": "cd ios && xed . && cd ..",
+    "android": "adb reverse tcp:8081 tcp:8081 && npx react-native run-android",
+    "ios": "npx react-native run-ios",
+    "start": "npx react-native start",
+    "test": "jest",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "clean-node-modules": "rm -rf node_modules && yarn",
+    "clean-pods": "cd ios/ && rm -rf Pods && pod install && cd ../",
+    "clean-ios": "rm -rf ios/build && rm -rf ~/Library/Developer/Xcode/DerivedData && rm -rf ./ios/DerivedData",
+    "clean-android": "cd android && ./gradlew clean && cd ..",
+    "clean-rn-cache": "rm -rf $TMPDIR/react-* && rm -rf $TMPDIR/react-native-packager-cache-* && rm -rf $TMPDIR/metro-bundler-cache-* && yarn cache clean && watchman watch-del-all && npx react-native start --reset-cache",
+    "nuke": "yarn clean-node-modules && yarn clean-pods && yarn clean-ios && yarn clean-android && yarn clean-rn-cache",
+    "prettier": "npx prettier --ignore-path .gitignore --write \"app/**/*.+(tsx|jsx|ts|js)\"",
+    "postinstall": "npx jetify && (cd ios && pod install && cd ..)"
+  },
+  "dependencies": {
+    "@apollo/client": "^3.3.9",
+    "@react-native-community/masked-view": "^0.1.10",
+    "@react-navigation/native": "^5.9.0",
+    "@react-navigation/stack": "^5.14.2",
+    "graphql": "^15.5.0",
+    "react": "16.13.1",
+    "react-native": "0.63.4",
+    "react-native-config": "^1.4.2",
+    "react-native-elements": "^3.2.0",
+    "react-native-gesture-handler": "^1.9.0",
+    "react-native-reanimated": "^1.13.2",
+    "react-native-safe-area-context": "^3.1.9",
+    "react-native-screens": "^2.15.1",
+    "react-native-vector-icons": "^8.0.0"
+  },
+  "devDependencies": {
+    "@babel/runtime": "^7.8.4",
+    "@react-native-community/eslint-config": "^1.1.0",
+    "@types/jest": "^25.2.3",
+    "@types/react-native": "^0.63.2",
+    "@types/react-test-renderer": "^16.9.2",
+    "babel-jest": "^25.1.0",
+    "eslint": "^6.5.1",
+    "jest": "^25.1.0",
+    "metro-react-native-babel-preset": "^0.59.0",
+    "react-test-renderer": "16.13.1",
+    "typescript": "^3.8.3"
+  },
+  "jest": {
+    "preset": "react-native",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ]
+  }
+}
