@@ -89,7 +89,7 @@ const createBlimpProject = async (toolbox: Toolbox, opts: Options) => {
 
   // Create React Native project
   const createSpinner = print.spin('Creating your React Native Project...');
-  await system.run('git clone git@github.com:teamairship/airfoil-template-blimp.git');
+  await system.run('git clone https://github.com/teamairship/airfoil-template-blimp.git');
   await system.run(`mv airfoil-template-blimp ${projectName}`);
 
   // TODO: update the following script to deeply rename the entire project (i.e.,
@@ -114,7 +114,7 @@ const createBlimpProject = async (toolbox: Toolbox, opts: Options) => {
 
   // Install Pods
   const installPodsSpinner = print.spin('Installing pods...');
-  await system.run(`cd ${projectName}/ios && pod install && cd ../`);
+  await system.run(`cd ${projectName}/ios && pod install --repo-update && cd ../`);
   installPodsSpinner.stop();
 
   print.success(`${projectName} has been created!`);

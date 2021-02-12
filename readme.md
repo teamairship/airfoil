@@ -19,6 +19,10 @@ $ npm test
 $ npm publish
 ```
 
+## Dependencies
+
+<!-- TODO: add steps for ensuring that airfoil works on user's machine (node, cocoapods, RN setup docs, etc.) -->
+
 ## Steps for Adding a New Template
 
 add some steps here...
