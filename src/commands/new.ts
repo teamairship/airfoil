@@ -9,35 +9,30 @@ import {
   CHOICE_TEMPLATE_BLIMP,
   CHOICE_TEMPLATE_PROP,
   CHOICE_TEMPLATE_JET,
-  REACT_NATIVE_INIT,
   AIRSHIP_EMAIL,
+  REPO_URL_TEMPLATE_JET,
+  DEFAULT_PROJECT_VERSION,
 } from '../constants';
+import { interfaceHelpers } from '../utils/interface';
+import { validations } from '../utils/validations';
 
-// see: https://stackoverflow.com/questions/36592157/typescript-can-i-mix-using-import-from-and-require
-import ora = require('ora');
+const decamelize = require('decamelize');
 
 // see here for all possible colors: https://github.com/Marak/colors.js
-const { cyan, gray, red, yellow } = print.colors;
+const { cyan, red, yellow } = print.colors;
 
 const command: GluegunCommand = {
   name: 'new',
   alias: 'n',
   run: async toolbox => {
-    const { parameters, print, prompt, filesystem } = toolbox;
+    const { parameters, print, prompt } = toolbox;
+    const { title, about, loadWhile } = interfaceHelpers(toolbox);
+    const { validateProjectName, checkCocoaPodsInstalled } = validations(toolbox);
 
-    print.info('');
-    print.info(red(' █████  ██ ██████  ███████  ██████  ██ ██      '));
-    print.info(red('██   ██ ██ ██   ██ ██      ██    ██ ██ ██      '));
-    print.info(red('███████ ██ ██████  █████   ██    ██ ██ ██      '));
-    print.info(red('██   ██ ██ ██   ██ ██      ██    ██ ██ ██      '));
-    print.info(red('██   ██ ██ ██   ██ ██       ██████  ██ ███████ '));
-    print.info('');
+    title();
+    about();
 
-    const debug = Boolean(parameters.options.debug);
-    const log = (m: string): string => {
-      if (debug) print.info(gray(m));
-      return m;
-    };
+    await loadWhile(checkCocoaPodsInstalled());
 
     let projectName: string;
     let projectDesc: string;
@@ -50,19 +45,14 @@ const command: GluegunCommand = {
       projectName = name;
     }
 
+    validateProjectName(projectName);
+
     const { desc } = await prompt.ask([questionProjectDesc]);
     projectDesc = desc;
-
-    if (filesystem.exists(projectName)) {
-      print.error(`${filesystem.cwd()}${filesystem.separator}${projectName} already exists!`);
-      process.exit(1);
-    }
 
     const opts: Options = {
       projectName,
       projectDesc,
-      debug,
-      log,
     };
 
     const { type } = await prompt.ask([questionProjectType]);
@@ -121,39 +111,39 @@ const createBlimpProject = async (toolbox: Toolbox, opts: Options) => {
 };
 
 const createJetProject = async (toolbox: Toolbox, opts: Options) => {
-  const { print, system, meta, filesystem, template } = toolbox;
-  const { projectName, projectDesc, debug, log } = opts;
-  const { path } = filesystem;
-  const templateJetPath = path(`${meta.src}`, 'boilerplate/react-native-template-jet');
+  const { print, filesystem, template } = toolbox;
+  const { projectName, projectDesc } = opts;
+  const { log, printTask, cmd } = interfaceHelpers(toolbox);
 
-  if (!filesystem.exists(templateJetPath))
-    throw new Error(`Jet template not found: ${templateJetPath}`);
+  let task;
 
-  let task: ora.Ora;
-
-  task = print.spin('🦾 Activating robot assemblers...');
-  const verbose = debug ? ' --verbose' : '';
-  const cmdInit = `${REACT_NATIVE_INIT} ${projectName} --template file://${templateJetPath} ${verbose}`;
-  await system.run(log(cmdInit));
+  task = printTask('🦾 Activating robot assemblers...');
+  await cmd(`git clone ${REPO_URL_TEMPLATE_JET} ${projectName}`);
   task.stop();
 
   if (!filesystem.exists(`${projectName}/package.json`))
-    throw new Error(`Something went wrong. Try running command manually:\n\t${cmdInit}`);
+    throw new Error(`Something went wrong. ${projectName}/package.json file not found.`);
 
   log(`changing directory to \`${projectName}\``);
   process.chdir(projectName);
 
-  task = print.spin('🪐 Folding dependencies into multidimensional space...');
-  await system.run(log(`yarn install`));
+  task = printTask('🕵️‍♀️  Supplying secret codenames...');
+  await cmd(`npx react-native-rename ${projectName}`);
   task.stop();
 
-  task = print.spin('⚡️ Transmogrifying starship configurations...');
+  task = printTask('🪐 Folding dependencies into 4D space...');
+  await cmd(`yarn install --ignore-scripts`);
+  await cmd(`cd ios && pod install --repo-update && cd ..`);
+  task.stop();
+
+  task = printTask('⚡️ Transmogrifying starship components...');
   // update package.json
-  const cmd = `npx json -I -f package.json -e`;
-  if (projectName) await system.run(log(`${cmd} 'this.name="${projectName}"'`));
-  if (projectDesc) await system.run(log(`${cmd} 'this.description="${projectDesc}"'`));
+  const editPkgJson = `npx json -I -f package.json -e`;
+  await cmd(`${editPkgJson} 'this.name="${decamelize(projectName, { separator: '-' })}"'`);
+  await cmd(`${editPkgJson} 'this.version="${DEFAULT_PROJECT_VERSION}"'`);
+  if (projectDesc) await cmd(`${editPkgJson} 'this.description="${projectDesc}"'`);
   // generate code of conduct
-  await system.run(log(`npx covgen ${AIRSHIP_EMAIL}`));
+  await cmd(`npx covgen ${AIRSHIP_EMAIL}`);
   // create README
   await template.generate({
     template: 'README.md.ejs',
@@ -161,17 +151,16 @@ const createJetProject = async (toolbox: Toolbox, opts: Options) => {
     props: { projectName, projectDesc },
   });
   // apply prettier so that app is already formatted correctly
-  await system.run(
-    log(`npx prettier --ignore-path .gitignore --write \"app/**/*.+(tsx|jsx|ts|js)\"`),
-  );
+  await cmd(`npx prettier --ignore-path .gitignore --write \"app/**/*.+(tsx|jsx|ts|js)\"`);
   task.stop();
 
-  task = print.spin('🧠 Uploading consciousness to Git...');
-  await system.run(log(`git init`));
-  await system.run(log(`git add --all`));
-  await system.run(log(`git commit -m "Initial commit ⚡️ Automated by Airfoil™ 🚀"`));
+  task = printTask('🧠 Uploading consciousness to Git...');
+  await cmd(`rm -rf .git`);
+  await cmd(`git init`);
+  await cmd(`git add --all`);
+  await cmd(`git commit -m "Initial commit ⚡️ Automated by Airfoil™ 🚀"`);
   // rename 'master' branch as 'main'
-  await system.run(log(`git branch -M main`));
+  await cmd(`git branch -M main`);
   task.stop();
 
   print.success(`${red(projectName)} successfully Airfoil'ed. 🚀`);
