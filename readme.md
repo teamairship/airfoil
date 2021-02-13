@@ -1,6 +1,29 @@
-# airfoil CLI
+# Airfoil CLI
 
-A CLI for airfoil.
+A tool to get your project off the ground. :airplane:
+
+## About
+
+Airfoil is a collection of opinionated boilerplates and generators for
+React Native. Its goal is to streamline the app creation process.
+
+## Installation
+
+Run the following command to install this command as a global binary:
+
+```
+npm install @airship/airfoil -g
+```
+
+## Usage
+
+```
+airfoil <CMD>
+```
+
+[See available commands here](./docs/commands.md).
+
+---
 
 ## Customizing your CLI
 
