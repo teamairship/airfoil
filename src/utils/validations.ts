@@ -11,6 +11,11 @@ export const validations = (toolbox: Toolbox) => {
   const { cyan, gray } = print.colors;
 
   const validateProjectName = (projectName: string) => {
+    if (!projectName) {
+      print.error(`Project name is required.`);
+      process.exit(1);
+    }
+
     if (filesystem.exists(projectName)) {
       print.error(`${filesystem.cwd()}${filesystem.separator}${projectName} already exists!`);
       process.exit(1);

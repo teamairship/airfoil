@@ -8,7 +8,13 @@ import { Toolbox } from 'gluegun/build/types/domain/toolbox';
  */
 export const interfaceHelpers = (toolbox: Toolbox) => {
   const { print, parameters, system, meta } = toolbox;
-  const { red, gray } = print.colors;
+  const { red, gray, cyan, bgBlack } = print.colors;
+
+  const code = (msg: string = '') => {
+    const len = Math.max(60 - msg.length, 0);
+    const ws = ' '.repeat(len);
+    print.info(`\t${bgBlack(`  ${msg}${ws}  `)}`);
+  };
 
   const title = () => {
     print.newline();
@@ -23,6 +29,20 @@ export const interfaceHelpers = (toolbox: Toolbox) => {
 
   const about = () => {
     print.info(gray(`Version ${meta.version()}\t\tMade with ♡ by Airship`));
+    print.newline();
+    print.newline();
+  };
+
+  const postInstallInstructions = (projectName: string) => {
+    print.newline();
+    print.newline();
+    code(bgBlack(` `));
+    code(gray(`You are now ready to hack.`));
+    code(cyan(`cd ${projectName}`));
+    code(cyan(`yarn start`));
+    code(cyan(`yarn ios`));
+    code(cyan(`yarn android`));
+    code(bgBlack(` `));
     print.newline();
     print.newline();
   };
@@ -60,8 +80,10 @@ export const interfaceHelpers = (toolbox: Toolbox) => {
   const cmd = (c: string) => system.run(log(c));
 
   return {
+    code,
     title,
     about,
+    postInstallInstructions,
     printTask,
     loader,
     loadWhile,

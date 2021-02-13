@@ -113,7 +113,7 @@ const createBlimpProject = async (toolbox: Toolbox, opts: Options) => {
 const createJetProject = async (toolbox: Toolbox, opts: Options) => {
   const { print, filesystem, template } = toolbox;
   const { projectName, projectDesc } = opts;
-  const { log, printTask, cmd } = interfaceHelpers(toolbox);
+  const { log, printTask, cmd, postInstallInstructions } = interfaceHelpers(toolbox);
 
   let task;
 
@@ -127,16 +127,17 @@ const createJetProject = async (toolbox: Toolbox, opts: Options) => {
   log(`changing directory to \`${projectName}\``);
   process.chdir(projectName);
 
-  task = printTask('🕵️‍♀️  Supplying secret codenames...');
+  task = printTask('💼 Supplying secret codenames...');
   await cmd(`npx react-native-rename ${projectName}`);
   task.stop();
 
   task = printTask('🪐 Folding dependencies into 4D space...');
   await cmd(`yarn install --ignore-scripts`);
-  await cmd(`cd ios && pod install --repo-update && cd ..`);
+  await cmd(`pod repo update`);
+  await cmd(`cd ios && pod install && cd ..`);
   task.stop();
 
-  task = printTask('⚡️ Transmogrifying starship components...');
+  task = printTask('🛠  Transmogrifying starship components...');
   // update package.json
   const editPkgJson = `npx json -I -f package.json -e`;
   await cmd(`${editPkgJson} 'this.name="${decamelize(projectName, { separator: '-' })}"'`);
@@ -164,6 +165,7 @@ const createJetProject = async (toolbox: Toolbox, opts: Options) => {
   task.stop();
 
   print.success(`${red(projectName)} successfully Airfoil'ed. 🚀`);
+  postInstallInstructions(projectName);
 };
 
 module.exports = command;
