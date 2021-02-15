@@ -1,7 +1,8 @@
 export const REACT_NATIVE_INIT = 'npx react-native init';
 
-export const APP_ROOT_PATH = 'app';
 export const AIRSHIP_EMAIL = 'builders@teamairship.com';
+export const REPO_URL_TEMPLATE_JET = 'git@github.com:teamairship/airfoil-template-jet.git';
+export const DEFAULT_PROJECT_VERSION = '0.0.1';
 
 export const questionProjectName = {
   type: 'input',

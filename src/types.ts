@@ -3,6 +3,4 @@ type Template = 'airfoil-template-blimp' | 'airfoil-template-propeller' | 'airfo
 export type Options = {
   projectName: string;
   projectDesc: string;
-  debug: boolean;
-  log: (m: string) => string;
 };
