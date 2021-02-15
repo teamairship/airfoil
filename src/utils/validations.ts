@@ -7,7 +7,7 @@ const camelCase = require('camelcase');
  * @param toolbox
  */
 export const validations = (toolbox: Toolbox) => {
-  const { print, filesystem, system } = toolbox;
+  const { print, filesystem, system, commandName } = toolbox;
   const { cyan, gray } = print.colors;
 
   const validateProjectName = (projectName: string) => {
@@ -39,8 +39,27 @@ export const validations = (toolbox: Toolbox) => {
     }
   };
 
+  /**
+   * Assert CWD is the root of a ReactNative project.
+   */
+  const checkCurrentDirReactNativeProject = async () => {
+    try {
+      // ensure presence of following files to prove that CWD is indeed a ReactNative project root
+      await system.run('cat package.json');
+      await system.run('cat app.json');
+      await system.run('cat ios/Podfile');
+      await system.run('cat android/build.gradle');
+    } catch (err) {
+      print.info(gray(err.message));
+      print.error(`\`airfoil ${commandName}\` was not initiated from a ReactNative project root!`);
+      print.info(gray('Change directory to a ReactNative project root and try again.'));
+      process.exit(1);
+    }
+  };
+
   return {
     validateProjectName,
     checkCocoaPodsInstalled,
+    checkCurrentDirReactNativeProject,
   };
 };

@@ -1,6 +1,6 @@
 # Command Reference for airfoil
 
-`new (n)`
+## `new (n)`
 
 Create a new React Native project
 
@@ -21,6 +21,27 @@ airfoil new starshipLaunchApp
 ```
 
 Violá! Once everything finishes, you will have a working React Native app ready for development.
+
+---
+
+## `version (v)`
+
+Bump the version number for a React Native project.
+
+This updates the version in `package.json` as well as `ios/` and `android/` directories.
+
+**Example:**
+
+```
+# bump version number (patch release e.g. 0.0.1 -> 0.0.2)
+airfoil version patch
+
+# bump version number (minor release e.g. 0.0.2 -> 0.1.0)
+airfoil version minor
+
+# bump version number (major release e.g. 0.1.0 -> 1.0.0)
+airfoil version major
+```
 
 ---
 

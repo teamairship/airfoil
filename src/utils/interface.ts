@@ -7,7 +7,7 @@ import { Toolbox } from 'gluegun/build/types/domain/toolbox';
  * @param toolbox
  */
 export const interfaceHelpers = (toolbox: Toolbox) => {
-  const { print, parameters, system, meta } = toolbox;
+  const { print, parameters, system, meta, commandName } = toolbox;
   const { red, gray, cyan, bgBlack } = print.colors;
 
   const code = (msg: string = '') => {
@@ -24,6 +24,18 @@ export const interfaceHelpers = (toolbox: Toolbox) => {
     print.info(red('███████ ██ ██████  █████   ██    ██ ██ ██      '));
     print.info(red('██   ██ ██ ██   ██ ██      ██    ██ ██ ██      '));
     print.info(red('██   ██ ██ ██   ██ ██       ██████  ██ ███████ '));
+    print.newline();
+  };
+
+  const titleSecondary = () => {
+    print.newline();
+    const spaceLetters = (w = '') => w.split('').join(' ');
+    const str1 = spaceLetters('AIRFOIL');
+    const str2 = spaceLetters(commandName.toUpperCase());
+    const str = red(` ${str1} ${cyan(str2)} `);
+    const len = Math.max(36 - str1.length - str2.length, 0);
+    const ws = ' '.repeat(Math.floor(len / 2));
+    print.info(gray(`--[${ws}${str} ${ws}]--`));
     print.newline();
   };
 
@@ -63,11 +75,12 @@ export const interfaceHelpers = (toolbox: Toolbox) => {
     };
   };
 
-  const loadWhile = async (p: Promise<void> | (() => Promise<void>)) => {
+  const loadWhile = async (p: Promise<any> | (() => Promise<any>)) => {
     const loading = loader();
     const result = typeof p === 'function' ? p() : p;
     await result;
     loading.stop();
+    return result;
   };
 
   const debug = Boolean(parameters.options.debug);
@@ -82,6 +95,7 @@ export const interfaceHelpers = (toolbox: Toolbox) => {
   return {
     code,
     title,
+    titleSecondary,
     about,
     postInstallInstructions,
     printTask,
