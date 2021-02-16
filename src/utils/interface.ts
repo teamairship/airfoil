@@ -51,9 +51,7 @@ export const interfaceHelpers = (toolbox: Toolbox) => {
     code(bgBlack(` `));
     code(gray(`You are now ready to hack.`));
     code(cyan(`cd ${projectName}`));
-    code(cyan(`yarn start`));
-    code(cyan(`yarn ios`));
-    code(cyan(`yarn android`));
+    code(cyan(`yarn ios || yarn android `));
     code(bgBlack(` `));
     print.newline();
     print.newline();
