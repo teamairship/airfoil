@@ -45,9 +45,39 @@ airfoil version major
 
 ---
 
-`generate (g)` WIP
+## `generate (g)`
 
-Generate a new model (?)
+**Alias: [`add`, `a`]**
+
+### `generate env`
+
+Add an ENV var.
+
+This updates `.env`, `.env.example`, `app/constants.ts`, and `appcenter-pre-build.sh` all in one go.
+
+**Args:**
+
+- `--boolean` (`--bool`, `-b`) - process as boolean ENV var
+- `--dry` (`-d`) - perform a dry test run (print out a Git diff of changes without changing any files)
+
+**Example:**
+
+```
+# follow prompts to add ENV
+airfoil add env
+
+# add env var SETUP=true
+airfoil add env setup=true
+
+# add env var TEST=true (alternate args)
+airfoil add env test true
+
+# add env var DEV=true as a boolean
+airfoil add env dev=true --boolean
+
+# perform dry run
+airfoil add env API_KEY=abc123 --dry
+```
 
 ---
 

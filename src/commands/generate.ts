@@ -49,7 +49,7 @@ const generateEnvVar = async (toolbox: GluegunToolbox) => {
   // omit first arg since that is "env"
   const args = parameters.array.slice(1);
   const optDry = parameters.options.dry;
-  const optBool = parameters.options.boolean || parameters.options.bool;
+  const optBool = parameters.options.boolean || parameters.options.bool || parameters.options.b;
   const optComment = parameters.options.comment || parameters.options.c;
 
   const printArg = (key, val) => print.info(gray(`${key}: ${cyan(val)}`));
