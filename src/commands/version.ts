@@ -83,7 +83,7 @@ const printInvalidVersionArgs = (toolbox: GluegunToolbox) => {
   const { print } = toolbox;
   const { gray, cyan } = print.colors;
   print.error(
-    `\`airfoil update version <type>\` expects type to be one of [${VERSION_TYPE_MAJOR}|${VERSION_TYPE_MINOR}|${VERSION_TYPE_PATCH}]`,
+    `\`airfoil version <type>\` expects type to be one of [${VERSION_TYPE_MAJOR}|${VERSION_TYPE_MINOR}|${VERSION_TYPE_PATCH}]`,
   );
   print.info(
     gray(`If you are trying to print the airfoil version number, run \`${cyan('airfoil help')}\``),
