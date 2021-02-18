@@ -56,6 +56,7 @@ module.exports = (toolbox: GluegunToolbox) => {
   //
   // PRINT EXTENSIONS
   //
+  // Only print if the `-v` (verbose) option is supplied
   const printV: PrintV = {
     info: isVerbose ? print.info : () => {},
     newline: isVerbose ? print.newline : () => {},

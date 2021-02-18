@@ -96,7 +96,6 @@ export const interfaceHelpers = (toolbox: GluegunToolboxExtended) => {
     postInstallInstructions,
     printTask,
     runTask,
-    printV,
     loader,
     loadWhile,
     cmd,
