@@ -1,4 +1,4 @@
-import { GluegunToolbox } from 'gluegun';
+import { GluegunToolboxExtended } from '../extensions/extensions';
 import { interfaceHelpers } from '../utils/interface';
 import { validations } from '../utils/validations';
 
@@ -9,12 +9,9 @@ const VERSION_TYPE_PATCH = 'patch';
 const command = {
   name: 'version',
   alias: ['v'],
-  run: async (toolbox: GluegunToolbox) => {
-    const { titleSecondary, about, loadWhile } = interfaceHelpers(toolbox);
+  run: async (toolbox: GluegunToolboxExtended) => {
+    const { loadWhile } = interfaceHelpers(toolbox);
     const { checkCurrentDirReactNativeProject } = validations(toolbox);
-
-    titleSecondary();
-    about();
 
     await loadWhile(checkCurrentDirReactNativeProject());
 
@@ -22,27 +19,26 @@ const command = {
   },
 };
 
-const updateVersion = async (toolbox: GluegunToolbox) => {
-  const { parameters, print } = toolbox;
-  const { gray, cyan, yellow, red, green } = print.colors;
+const updateVersion = async (toolbox: GluegunToolboxExtended) => {
+  const { parameters, print, printV } = toolbox;
+  const { gray, cyan, yellow, red, green, white } = print.colors;
   const { cmd, printTask, loadWhile } = interfaceHelpers(toolbox);
+  const { optUpdate } = toolbox.globalOpts;
 
   const type = parameters.first;
-  if (!type || ![VERSION_TYPE_MAJOR, VERSION_TYPE_MINOR, VERSION_TYPE_PATCH].includes(type)) {
-    printInvalidVersionArgs(toolbox);
-    process.exit(1);
-  }
+  checkParameters(toolbox);
 
-  let typeColor = cyan;
+  let typeColor = white;
+  if (type === VERSION_TYPE_PATCH) typeColor = cyan;
   if (type === VERSION_TYPE_MINOR) typeColor = yellow;
   if (type === VERSION_TYPE_MAJOR) typeColor = red;
 
   const pkgJsonProps: string = await loadWhile(cmd('cat package.json | npx json version name'));
   const [currentVersion, appName] = pkgJsonProps.split(/\n/).filter(w => !!w);
-  print.info(gray(`App: ${appName.replace('\n', '')}`));
-  print.info(gray(`Current version: ${currentVersion.replace('\n', '')}`));
-  print.info(gray(`Version change: ${typeColor(`${type} release`)}`));
-  print.newline();
+  printV.info(gray(`App: ${appName.replace('\n', '')}`));
+  printV.info(gray(`Current version: ${currentVersion.replace('\n', '')}`));
+  if (type) printV.info(gray(`Version change: ${typeColor(`${type} release`)}`));
+  printV.newline();
 
   let task;
   task = printTask('🔬 Checking some things...');
@@ -59,15 +55,15 @@ const updateVersion = async (toolbox: GluegunToolbox) => {
   // see: https://docs.npmjs.com/cli/v6/commands/npm-version
   // see: https://www.npmjs.com/package/react-native-version
   task = printTask('🍳 Cooking version number...');
-  await cmd(`npm --no-git-tag-version version ${type}`);
+  await cmd(`npm --no-git-tag-version version ${optUpdate || type}`);
   const newVersionRaw = await cmd('cat package.json | npx json version');
   const newVersion = newVersionRaw.replace('\n', '');
   await cmd(`npx react-native-version --skip-tag --never-amend`);
   task.stop();
 
-  print.newline();
+  printV.newline();
   print.info(gray(`New version: ${green(newVersion)}`));
-  print.newline();
+  printV.newline();
 
   task = printTask('🎓 Graduating to Git...');
   await cmd(`git tag -a v${newVersion} -m "v${newVersion}"`);
@@ -75,11 +71,23 @@ const updateVersion = async (toolbox: GluegunToolbox) => {
   await cmd(`git commit -m "bump version to ${newVersion}"`);
   task.stop();
 
-  print.newline();
-  print.success(`${print.checkmark} All done!`);
+  printV.newline();
+  printV.success(`${print.checkmark} All done!`);
 };
 
-const printInvalidVersionArgs = (toolbox: GluegunToolbox) => {
+const checkParameters = (toolbox: GluegunToolboxExtended) => {
+  const { parameters } = toolbox;
+  const { optUpdate } = toolbox.globalOpts;
+  if (optUpdate) return;
+
+  const type = parameters.first;
+  if (!type || ![VERSION_TYPE_MAJOR, VERSION_TYPE_MINOR, VERSION_TYPE_PATCH].includes(type)) {
+    printInvalidVersionArgs(toolbox);
+    process.exit(1);
+  }
+};
+
+const printInvalidVersionArgs = (toolbox: GluegunToolboxExtended) => {
   const { print } = toolbox;
   const { gray, cyan } = print.colors;
   print.error(

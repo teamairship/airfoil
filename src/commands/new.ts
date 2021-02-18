@@ -1,6 +1,7 @@
 import { GluegunCommand } from 'gluegun';
 import { print } from 'gluegun/print';
-import { Toolbox } from 'gluegun/build/types/domain/toolbox';
+
+import { GluegunToolboxExtended } from '../extensions/extensions';
 import {
   CHOICE_TEMPLATE_BLIMP,
   CHOICE_TEMPLATE_JET,
@@ -34,7 +35,7 @@ const templateAssociations = {
 const command: GluegunCommand = {
   name: 'new',
   alias: 'n',
-  run: async toolbox => {
+  run: async (toolbox: GluegunToolboxExtended) => {
     const { parameters, print, prompt } = toolbox;
     const { title, about, loadWhile } = interfaceHelpers(toolbox);
     const { validateProjectName, checkCocoaPodsInstalled } = validations(toolbox);
@@ -62,7 +63,11 @@ const command: GluegunCommand = {
   },
 };
 
-const createProject = async (projectName: string, template: RepoLocation, toolbox: Toolbox) => {
+const createProject = async (
+  projectName: string,
+  template: RepoLocation,
+  toolbox: GluegunToolboxExtended,
+) => {
   const { print, filesystem } = toolbox;
   const { log, postInstallInstructions } = interfaceHelpers(toolbox);
 
