@@ -1,0 +1,123 @@
+#!/bin/bash
+# Bugsnag sourcemaps bundle && upload script
+
+#
+# UTILS
+#
+
+# taken from: https://gist.github.com/judy2k/7656bfe3b322d669ef75364a46327836#gistcomment-2882842
+read_env_var() {
+  VAR=$(grep "^$1=" .env | xargs)
+  IFS="=" read -ra VAR <<< "$VAR"
+  IFS=" "
+  echo ${VAR[1]}
+}
+
+# taken from https://gist.github.com/DarrenN/8c6a5b969481725a4413
+read_package_json_version() {
+  # Version key/value should be on its own line
+  VAR=$(cat package.json \
+    | grep version \
+    | head -1 \
+    | awk -F: '{ print $2 }' \
+    | sed 's/[",]//g')
+  echo $VAR
+}
+
+#
+# CONFIG
+#
+
+ENVS=(
+  testflight
+  production
+)
+APP_VERSION=$(read_package_json_version)
+BUGSNAG_API_KEY=$(read_env_var BUGSNAG_API_KEY)
+# clean up sourcemap bundles
+CLEANUP=true
+
+# IF bugsnag ENV var unset, die
+if [ -z "$BUGSNAG_API_KEY" ]; then
+  echo "BUGSNAG_API_KEY is not set!!";
+  exit 1
+fi
+
+#
+# SCRIPT
+#
+
+echo
+echo "###########################"
+echo "### BUGSNAG SOURCE MAPS ###"
+echo "###########################"
+echo
+echo "App version: '${APP_VERSION}'"
+
+for ENV in "${ENVS[@]}"; do
+
+  DEV=false
+  if [ $ENV = "debug" ] || [ $ENV = "development" ] ; then
+    DEV=true
+  fi
+  VARIANT="Release"
+  if [ $DEV = true ] ; then
+    VARIANT="Debug"
+  fi
+
+  
+  echo
+  echo "Variant: '${VARIANT}'"
+  echo "Generating ios source map for '${ENV}'..."
+
+  npx react-native bundle \
+    --platform ios \
+    --dev ${DEV} \
+    --entry-file index.js \
+    --bundle-output ios-${ENV}.bundle \
+    --sourcemap-output ios-${ENV}.bundle.map
+
+  echo "OK"
+  echo "Generating android source map for '${ENV}'..."
+
+  npx react-native bundle \
+    --platform android \
+    --dev ${DEV} \
+    --entry-file index.js \
+    --bundle-output android-${ENV}.bundle \
+    --sourcemap-output android-${ENV}.bundle.map
+
+  echo "OK"
+  echo "Uploading ios source map to bugsnag..."
+
+  curl --http1.1 https://upload.bugsnag.com/react-native-source-map \
+    -F apiKey=$BUGSNAG_API_KEY \
+    -F appVersion=$APP_VERSION \
+    -F dev=$DEV \
+    -F platform=ios \
+    -F sourceMap=@ios-${ENV}.bundle.map \
+    -F bundle=@ios-${ENV}.bundle \
+    -F projectRoot=$(pwd)
+
+  echo "Uploading android source map to bugsnag..."
+
+  curl --http1.1 https://upload.bugsnag.com/react-native-source-map \
+    -F apiKey=$BUGSNAG_API_KEY \
+    -F appVersion=$APP_VERSION \
+    -F dev=$DEV \
+    -F platform=android \
+    -F sourceMap=@android-${ENV}.bundle.map \
+    -F bundle=@android-${ENV}.bundle \
+    -F projectRoot=$(pwd)
+
+  if [ $CLEANUP ]; then
+    echo "Cleaning up..."
+    rm ios-${ENV}.bundle
+    rm ios-${ENV}.bundle.map
+    rm android-${ENV}.bundle
+    rm android-${ENV}.bundle.map
+  fi
+
+done # for ENV in ENVS
+
+echo "✓ done"

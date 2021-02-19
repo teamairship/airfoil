@@ -1,14 +1,15 @@
 import { constantCase } from 'constant-case';
 
 import { GluegunToolboxExtended } from '../extensions/extensions';
-import { toolGetFileContent } from '../utils/content';
-import { toolPrintDiff } from '../utils/diff';
-import { addEnvVar, addConstant, addAppCenterVar } from '../utils/envVar';
-import { stripQuotes } from '../utils/formatting';
+import { generateAdr } from '../scripts/generateAdr';
+import { generateEnvVar } from '../scripts/generateEnvVar';
 import { interfaceHelpers } from '../utils/interface';
+import { stripQuotes } from '../utils/formatting';
+import { validations } from '../utils/validations';
 
 const TYPE_ENV = 'env';
-const VALID_TYPES = [TYPE_ENV];
+const TYPE_ADR = 'adr';
+const VALID_TYPES = [TYPE_ENV, TYPE_ADR];
 type ENV_TYPE = 'string' | 'boolean';
 
 const command = {
@@ -16,6 +17,10 @@ const command = {
   alias: ['gen', 'g', 'add', 'a'],
   run: async (toolbox: GluegunToolboxExtended) => {
     const { parameters } = toolbox;
+    const { loadWhile } = interfaceHelpers(toolbox);
+    const { checkCurrentDirReactNativeProject } = validations(toolbox);
+
+    await loadWhile(checkCurrentDirReactNativeProject());
 
     const type = parameters.first;
 
@@ -26,7 +31,10 @@ const command = {
 
     switch (type) {
       case TYPE_ENV:
-        return generateEnvVar(toolbox);
+        return commandEnv(toolbox);
+
+      case TYPE_ADR:
+        return commandAdr(toolbox);
 
       default:
         return printInvalidArgs(toolbox);
@@ -34,14 +42,43 @@ const command = {
   },
 };
 
+const questionsEnv = {
+  envKey: {
+    type: 'input',
+    name: 'envKey',
+    message: 'Enter the ENV name:',
+  },
+  envVal: {
+    type: 'input',
+    name: 'envVal',
+    message: 'Enter the ENV value (Optional):',
+  },
+};
+
+const promptEnvKey = async (toolbox: GluegunToolboxExtended): Promise<string> => {
+  const { prompt } = toolbox;
+  const { envKey } = await prompt.ask([questionsEnv.envKey]);
+  return envKey;
+};
+
+const promptEnvVal = async (toolbox: GluegunToolboxExtended): Promise<string> => {
+  const { prompt } = toolbox;
+  const { envVal } = await prompt.ask([questionsEnv.envVal]);
+  return envVal;
+};
+
+const printInvalidArgs = (toolbox: GluegunToolboxExtended) => {
+  const { print } = toolbox;
+  print.error(`\`airfoil generate <type>\` expects type to be one of [${VALID_TYPES.join('|')}]`);
+};
+
 /**
  * Update .env, .env.example, app/constants.ts, and appcenter-pre-build.ts with ENV var data
  * @param toolbox
  */
-const generateEnvVar = async (toolbox: GluegunToolboxExtended) => {
+const commandEnv = async (toolbox: GluegunToolboxExtended) => {
   const { print, printV, parameters } = toolbox;
   const { gray, cyan } = print.colors;
-  const { dryNotice } = interfaceHelpers(toolbox);
 
   // omit first arg since that is "env"
   const args = parameters.array.slice(1);
@@ -78,129 +115,35 @@ const generateEnvVar = async (toolbox: GluegunToolboxExtended) => {
   envType = optBool || envVal === 'true' || envVal === 'false' ? 'boolean' : 'string';
   envComment = optComment ? stripQuotes(optComment) : '';
 
-  dryNotice();
-
-  const [printDiff, cleanup] = toolPrintDiff(toolbox);
-
-  await processEnvFile({
-    filePath: '.env',
-    defaultContent: await defaultContentEnv(toolbox),
-    toNewContent: content => addEnvVar(content, envKey, envVal, envComment),
-    printDiff,
-    toolbox,
-  });
-
-  await processEnvFile({
-    filePath: '.env.example',
-    defaultContent: await defaultContentEnv(toolbox),
-    toNewContent: content => addEnvVar(content, envKey, '', envComment),
-    printDiff,
-    toolbox,
-  });
-
-  await processEnvFile({
-    filePath: 'app/constants.ts',
-    defaultContent: await defaultContentConstants(toolbox),
-    toNewContent: content => addConstant(content, envKey, envComment, envType),
-    printDiff,
-    toolbox,
-  });
-
-  await processEnvFile({
-    filePath: 'appcenter-pre-build.sh',
-    defaultContent: await defaultContentAppCenter(toolbox),
-    toNewContent: content => addAppCenterVar(content, envKey),
-    printDiff,
-    toolbox,
-  });
-
-  cleanup();
+  await generateEnvVar({ toolbox, envKey, envVal, envType, envComment });
 };
 
-const questions = {
-  envKey: {
+const questionsAdr = {
+  adrTitle: {
     type: 'input',
-    name: 'envKey',
-    message: 'Enter the ENV name:',
-  },
-  envVal: {
-    type: 'input',
-    name: 'envVal',
-    message: 'Enter the ENV value (Optional):',
-  },
-  envType: {
-    type: 'select',
-    name: 'envType',
-    message: 'Type of ENV?',
-    choices: ['string', 'boolean'],
-  },
-  envComment: {
-    type: 'input',
-    name: 'envComment',
-    message: 'Add a comment? (Leave blank to skip):',
+    name: 'adrTitle',
+    message: "What is your ADR's title?",
   },
 };
 
-const promptEnvKey = async (toolbox: GluegunToolboxExtended): Promise<string> => {
+const promptAdrTitle = async (toolbox: GluegunToolboxExtended): Promise<string> => {
   const { prompt } = toolbox;
-  const { envKey } = await prompt.ask([questions.envKey]);
-  return envKey;
+  const { adrTitle } = await prompt.ask([questionsAdr.adrTitle]);
+  return adrTitle;
 };
 
-const promptEnvVal = async (toolbox: GluegunToolboxExtended): Promise<string> => {
-  const { prompt } = toolbox;
-  const { envVal } = await prompt.ask([questions.envVal]);
-  return envVal;
-};
-
-const processEnvFile = async ({
-  filePath,
-  defaultContent,
-  toNewContent,
-  printDiff,
-  toolbox,
-}: {
-  filePath: string;
-  defaultContent?: string;
-  toNewContent: (content: string) => string;
-  printDiff: (content: string, newContent: string, fileName?: string) => Promise<void>;
-  toolbox: GluegunToolboxExtended;
-}): Promise<void> => {
-  const { filesystem, print } = toolbox;
-  const { optDry, optVerbose } = toolbox.globalOpts;
-  const getFileContent = toolGetFileContent(toolbox);
-  try {
-    const content = getFileContent(filePath, defaultContent);
-    const newContent = toNewContent(content);
-
-    if (optDry || optVerbose) await printDiff(content, newContent, filePath);
-    if (optDry) return;
-
-    filesystem.write(filePath, newContent);
-    print.success(`${print.checkmark} updated ${filePath}`);
-  } catch (err) {
-    print.error(err);
+/**
+ * Generate an Architecture Decision Record (ADR)
+ * @param toolbox
+ */
+const commandAdr = async (toolbox: GluegunToolboxExtended) => {
+  const { parameters, print } = toolbox;
+  const adrTitle = parameters.second || (await promptAdrTitle(toolbox));
+  if (!adrTitle) {
+    print.error(`ADR Title required for \`airfoil generate adr\``);
+    process.exit(1);
   }
-};
-
-const defaultContentEnv = async (toolbox: GluegunToolboxExtended) =>
-  toolbox.template.generate({
-    template: '.env.ejs',
-  });
-
-const defaultContentConstants = async (toolbox: GluegunToolboxExtended) =>
-  toolbox.template.generate({
-    template: 'constants.ts.ejs',
-  });
-
-const defaultContentAppCenter = async (toolbox: GluegunToolboxExtended) =>
-  toolbox.template.generate({
-    template: 'appcenter-pre-build.sh.ejs',
-  });
-
-const printInvalidArgs = (toolbox: GluegunToolboxExtended) => {
-  const { print } = toolbox;
-  print.error(`\`airfoil generate <type>\` expects type to be one of [${VALID_TYPES.join('|')}]`);
+  return generateAdr(toolbox, adrTitle);
 };
 
 module.exports = command;
