@@ -91,6 +91,21 @@ airfoil add env dev=mighty --boolean
 airfoil add env API_KEY=abc123 --dry
 ```
 
+### `generate adr`
+
+Add an Architecture Design Record (ADR).
+
+**Example:**
+
+```
+# follow prompts to add ADR
+airfoil add adr
+
+# specify ADR title as arg1
+airfoil add adr "Choose Cognito for Auth"
+
+```
+
 ---
 
 `help (h)`
