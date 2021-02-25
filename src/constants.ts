@@ -1,7 +1,4 @@
-export type RepoLocation =
-  | 'git@github.com:teamairship/airfoil-template-blimp.git'
-  | 'git@github.com:teamairship/airfoil-template-jet.git'
-  | 'git@github.com:teamairship/airfoil-template-propeller.git';
+export type TemplateType = 'blimp' | 'jet' | 'propeller';
 
 //------------------------
 //------- GENERAL --------
@@ -36,11 +33,9 @@ export const questionProjectType = {
 };
 
 //------------------------
-//---- REPO LOCATIONS ----
+//---- TEMPLATES ----
 //------------------------
-export const REPO_URL_TEMPLATE_BLIMP: RepoLocation =
-  'git@github.com:teamairship/airfoil-template-blimp.git';
-export const REPO_URL_TEMPLATE_JET: RepoLocation =
-  'git@github.com:teamairship/airfoil-template-jet.git';
-export const REPO_URL_TEMPLATE_PROPELLER: RepoLocation =
-  'git@github.com:teamairship/airfoil-template-propeller.git';
+export const TEMPLATES_REPO_URL = 'git@github.com:teamairship/airfoil-schematics.git';
+export const TEMPLATE_TYPE_BLIMP: TemplateType = 'blimp';
+export const TEMPLATE_TYPE_JET: TemplateType = 'jet';
+export const TEMPLATE_TYPE_PROPELLER: TemplateType = 'propeller';
