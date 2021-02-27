@@ -53,11 +53,11 @@ airfoil version -u 2.3.4
 
 ---
 
-## `generate (g)`
+## `add (a)`
 
-**Alias: [`add`, `a`]**
+**Alias: [`generate`, `g`]**
 
-### `generate env`
+### `add env`
 
 Add an ENV var.
 
@@ -91,7 +91,7 @@ airfoil add env dev=mighty --boolean
 airfoil add env API_KEY=abc123 --dry
 ```
 
-### `generate adr`
+### `add adr`
 
 Add an Architecture Design Record (ADR).
 

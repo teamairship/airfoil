@@ -13,7 +13,7 @@ const VALID_TYPES = [TYPE_ENV, TYPE_ADR];
 type ENV_TYPE = 'string' | 'boolean';
 
 const command = {
-  name: 'generate',
+  name: 'add',
   alias: ['gen', 'g', 'add', 'a'],
   run: async (toolbox: GluegunToolboxExtended) => {
     const { parameters } = toolbox;
