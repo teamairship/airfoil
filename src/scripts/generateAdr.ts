@@ -1,7 +1,6 @@
 import { snakeCase } from 'snake-case';
 import { GluegunToolboxExtended } from '../extensions/extensions';
-import { interfaceHelpers } from '../utils/interface';
-const camelCase = require('camelcase');
+import { getProjectName } from '../utils/meta';
 
 const PATH_ADRS = 'adr';
 const PATH_ADR_README = 'adr/__README__.md';
@@ -64,10 +63,4 @@ const getNextAdrIndex = (toolbox: GluegunToolboxExtended, pathAdrDir: string): s
 
   const nextIndex = maxIndex;
   return nextIndex.toString().padStart(4, '0');
-};
-
-const getProjectName = async (toolbox: GluegunToolboxExtended) => {
-  const { cmd } = interfaceHelpers(toolbox);
-  const appNameRaw = await cmd('cat package.json | npx json name');
-  return camelCase(appNameRaw.replace('\n', ''));
 };
