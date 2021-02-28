@@ -122,7 +122,6 @@ This makes file changes and installs dependencies based on the AppCenter Getting
 ```
 # follow prompts to add appcenter
 airfoil add appcenter
-
 ```
 
 ---

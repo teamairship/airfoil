@@ -160,11 +160,6 @@ const questionsAppCenter = {
     name: 'appCenterSecret',
     message: 'What is your AppCenter secret? (leave blank to skip)',
   },
-  overrideAppCenterConfigPlist: {
-    type: 'confirm',
-    name: 'overrideAppCenterConfigPlist',
-    message: '`AppCenter-Config.plist` already exists - overwrite?',
-  },
 };
 
 const promptAppCenterSecret = async (toolbox: GluegunToolboxExtended): Promise<string> => {

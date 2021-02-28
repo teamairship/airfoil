@@ -63,6 +63,11 @@ export const generateAppCenterContent = async (
     target: 'appcenter-post-build.sh',
   });
 
+  await addTemplateAndPromptIfExisting(toolbox, printDiff, {
+    template: 'appcenter/version-capture-script.sh.ejs',
+    target: 'version-capture-script.sh',
+  });
+
   cleanup();
 };
 
