@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# See: https://stackoverflow.com/a/10383546/14145859
+
+FILE=./upload-bugsnag-sourcemaps.sh
+if [[ -f "$FILE" ]]; then
+  ./upload-bugsnag-sourcemaps.sh
+fi
+
+FILE=./version-capture-script.js
+if [[ -f "$FILE" ]]; then
+  node ./version-capture-script.js
+fi

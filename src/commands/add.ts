@@ -6,14 +6,18 @@ import { generateEnvVar } from '../scripts/generateEnvVar';
 import { interfaceHelpers } from '../utils/interface';
 import { stripQuotes } from '../utils/formatting';
 import { validations } from '../utils/validations';
+import { generateAppCenterContent } from '../scripts/generateAppCenterContent';
+import { getProjectName } from '../utils/meta';
 
 const TYPE_ENV = 'env';
 const TYPE_ADR = 'adr';
-const VALID_TYPES = [TYPE_ENV, TYPE_ADR];
+const TYPE_APPCENTER = 'appcenter';
+const TYPE_APPCENTER_ALT = 'app-center';
+const VALID_TYPES = [TYPE_ENV, TYPE_ADR, TYPE_APPCENTER, TYPE_APPCENTER_ALT];
 type ENV_TYPE = 'string' | 'boolean';
 
 const command = {
-  name: 'generate',
+  name: 'add',
   alias: ['gen', 'g', 'add', 'a'],
   run: async (toolbox: GluegunToolboxExtended) => {
     const { parameters } = toolbox;
@@ -35,6 +39,10 @@ const command = {
 
       case TYPE_ADR:
         return commandAdr(toolbox);
+
+      case TYPE_APPCENTER:
+      case TYPE_APPCENTER_ALT:
+        return commandAppCenter(toolbox);
 
       default:
         return printInvalidArgs(toolbox);
@@ -144,6 +152,38 @@ const commandAdr = async (toolbox: GluegunToolboxExtended) => {
     process.exit(1);
   }
   return generateAdr(toolbox, adrTitle);
+};
+
+const questionsAppCenter = {
+  secretKey: {
+    type: 'input',
+    name: 'appCenterSecret',
+    message: 'What is your AppCenter secret? (leave blank to skip)',
+  },
+};
+
+const promptAppCenterSecret = async (toolbox: GluegunToolboxExtended): Promise<string> => {
+  const { prompt } = toolbox;
+  const { appCenterSecret } = await prompt.ask([questionsAppCenter.secretKey]);
+  return appCenterSecret || '{APP_SECRET_VALUE}';
+};
+
+const commandAppCenter = async (toolbox: GluegunToolboxExtended) => {
+  const { cmd, runTask } = interfaceHelpers(toolbox);
+  const { print } = toolbox;
+  const { optDry } = toolbox.globalOpts;
+
+  const projectName = await getProjectName(toolbox);
+  const appCenterSecret = await promptAppCenterSecret(toolbox);
+
+  if (!optDry) {
+    print.info('🔧 installing appcenter deps...');
+    await runTask('', async () => {
+      await cmd('yarn add appcenter appcenter-analytics appcenter-crashes --exact');
+    });
+  }
+
+  await generateAppCenterContent(toolbox, projectName, appCenterSecret);
 };
 
 module.exports = command;

@@ -53,11 +53,11 @@ airfoil version -u 2.3.4
 
 ---
 
-## `generate (g)`
+## `add (a)`
 
-**Alias: [`add`, `a`]**
+**Alias: [`generate`, `g`]**
 
-### `generate env`
+### `add env`
 
 Add an ENV var.
 
@@ -91,7 +91,7 @@ airfoil add env dev=mighty --boolean
 airfoil add env API_KEY=abc123 --dry
 ```
 
-### `generate adr`
+### `add adr`
 
 Add an Architecture Design Record (ADR).
 
@@ -104,6 +104,24 @@ airfoil add adr
 # specify ADR title as arg1
 airfoil add adr "Choose Cognito for Auth"
 
+```
+
+### `add appcenter`
+
+Add AppCenter support to your React Native app.
+
+This makes file changes and installs dependencies based on the AppCenter Getting Started guide](https://docs.microsoft.com/en-us/appcenter/sdk/getting-started/react-native).
+
+**Args:**
+
+- `--dry` (`-d`) - perform a dry test run _(print out a Git diff of changes without changing any files)_
+- `--verbose` (`-v`) - print more detailed logs
+
+**Example:**
+
+```
+# follow prompts to add appcenter
+airfoil add appcenter
 ```
 
 ---

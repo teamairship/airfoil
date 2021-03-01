@@ -1,8 +1,8 @@
 import { GluegunToolboxExtended } from '../extensions/extensions';
 import { interfaceHelpers } from '../utils/interface';
-import { toolGetFileContent } from '../utils/content';
 import { toolPrintDiff } from '../utils/diff';
 import { addEnvVar, addConstant, addAppCenterVar } from '../utils/envVar';
+import { updateFileWithNewContent } from '../utils/filesystem';
 
 export const generateEnvVar = async ({
   toolbox,
@@ -22,7 +22,7 @@ export const generateEnvVar = async ({
 
   const [printDiff, cleanup] = toolPrintDiff(toolbox);
 
-  await processEnvFile({
+  await updateFileWithNewContent({
     filePath: '.env',
     defaultContent: await defaultContentEnv(toolbox),
     toNewContent: content => addEnvVar(content, envKey, envVal, envComment),
@@ -30,7 +30,7 @@ export const generateEnvVar = async ({
     toolbox,
   });
 
-  await processEnvFile({
+  await updateFileWithNewContent({
     filePath: '.env.example',
     defaultContent: await defaultContentEnv(toolbox),
     toNewContent: content => addEnvVar(content, envKey, '', envComment),
@@ -38,7 +38,7 @@ export const generateEnvVar = async ({
     toolbox,
   });
 
-  await processEnvFile({
+  await updateFileWithNewContent({
     filePath: 'app/constants.ts',
     defaultContent: await defaultContentConstants(toolbox),
     toNewContent: content => addConstant(content, envKey, envComment, envType),
@@ -46,7 +46,7 @@ export const generateEnvVar = async ({
     toolbox,
   });
 
-  await processEnvFile({
+  await updateFileWithNewContent({
     filePath: 'appcenter-pre-build.sh',
     defaultContent: await defaultContentAppCenter(toolbox),
     toNewContent: content => addAppCenterVar(content, envKey),
@@ -55,40 +55,6 @@ export const generateEnvVar = async ({
   });
 
   cleanup();
-};
-
-const processEnvFile = async ({
-  filePath,
-  defaultContent,
-  toNewContent,
-  printDiff,
-  toolbox,
-  ignoreMissingFile = false,
-}: {
-  filePath: string;
-  defaultContent?: string;
-  toNewContent: (content: string) => string;
-  printDiff: (content: string, newContent: string, fileName?: string) => Promise<void>;
-  toolbox: GluegunToolboxExtended;
-  ignoreMissingFile?: boolean;
-}): Promise<void> => {
-  const { filesystem, print } = toolbox;
-  const { optDry, optVerbose } = toolbox.globalOpts;
-  const getFileContent = toolGetFileContent(toolbox);
-  try {
-    const content = getFileContent(filePath, defaultContent, ignoreMissingFile);
-    if (typeof content !== 'string') return;
-
-    const newContent = toNewContent(content);
-
-    if (optDry || optVerbose) await printDiff(content, newContent, filePath);
-    if (optDry) return;
-
-    filesystem.write(filePath, newContent);
-    print.success(`${print.checkmark} updated ${filePath}`);
-  } catch (err) {
-    print.error(err);
-  }
 };
 
 const defaultContentEnv = async (toolbox: GluegunToolboxExtended) =>
