@@ -1,22 +1,31 @@
 import { GluegunToolboxExtended } from '../extensions/extensions';
-import { AIRSHIP_EMAIL, DEFAULT_PROJECT_VERSION, RepoLocation } from '../constants';
+import {
+  AIRSHIP_EMAIL,
+  DEFAULT_PROJECT_VERSION,
+  TEMPLATES_REPO_URL,
+  TemplateType,
+} from '../constants';
 import { interfaceHelpers } from '../utils/interface';
 const decamelize = require('decamelize');
 
 /**
  * Clones the template from the repository on Airship's GitHub profile
- * @param repo location of the template repository
+ * @param template which template to install
  * @param projectName name of the project
  * @param toolbox Gluegun-supplied toolbox
  */
 export const cloneTemplateRepo = async (
   projectName: string,
-  repo: RepoLocation,
+  template: TemplateType,
   toolbox: GluegunToolboxExtended,
 ) => {
   const { cmd, printTask } = interfaceHelpers(toolbox);
   const task = printTask('☀️  Opening hangar door...');
-  await cmd(`git clone ${repo} ${projectName}`);
+  const TEMP_DIR = `_AIRFOIL_TEMP_${projectName}`;
+  await cmd(`git clone ${TEMPLATES_REPO_URL} ${TEMP_DIR}`);
+  await cmd(`mkdir ${projectName}`);
+  await cmd(`cp -r ${TEMP_DIR}/templates/${template}/. ${projectName}`);
+  await cmd(`rm -rf ${TEMP_DIR}`);
   task.stop();
 };
 
