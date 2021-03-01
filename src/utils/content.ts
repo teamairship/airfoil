@@ -13,6 +13,7 @@ import { GluegunToolbox } from 'gluegun';
 export const toolGetFileContent = (toolbox: GluegunToolbox) => (
   filePath: string,
   defaultContent: string,
+  ignoreMissingFile?: boolean,
 ) => {
   const { filesystem, print } = toolbox;
 
@@ -23,7 +24,9 @@ export const toolGetFileContent = (toolbox: GluegunToolbox) => (
       return defaultContent;
     }
 
-    print.warning(`WARNING: file \`${filesystem.cwd()}/${filePath}\` does not exist! Skipping`);
+    if (!ignoreMissingFile) {
+      print.warning(`WARNING: file \`${filesystem.cwd()}/${filePath}\` does not exist! Skipping`);
+    }
     return;
   }
 
