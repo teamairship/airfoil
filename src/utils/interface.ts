@@ -1,4 +1,4 @@
-import { Toolbox } from 'gluegun/build/types/domain/toolbox';
+import { GluegunToolboxExtended } from '../extensions/extensions';
 
 /**
  * Interface Helpers for Humans
@@ -6,15 +6,10 @@ import { Toolbox } from 'gluegun/build/types/domain/toolbox';
  * @see https://github.com/Marak/colors.js
  * @param toolbox
  */
-export const interfaceHelpers = (toolbox: Toolbox) => {
-  const { print, parameters, system, meta, commandName } = toolbox;
+export const interfaceHelpers = (toolbox: GluegunToolboxExtended) => {
+  const { print, printV, parameters, system, meta } = toolbox;
   const { red, gray, cyan, bgBlack } = print.colors;
-
-  const code = (msg: string = '') => {
-    const len = Math.max(60 - msg.length, 0);
-    const ws = ' '.repeat(len);
-    print.info(`\t${bgBlack(`  ${msg}${ws}  `)}`);
-  };
+  const { optDry, isVerbose } = toolbox.globalOpts;
 
   const title = () => {
     print.newline();
@@ -27,47 +22,51 @@ export const interfaceHelpers = (toolbox: Toolbox) => {
     print.newline();
   };
 
-  const titleSecondary = () => {
-    print.newline();
-    const spaceLetters = (w = '') => w.split('').join(' ');
-    const str1 = spaceLetters('AIRFOIL');
-    const str2 = spaceLetters(commandName.toUpperCase());
-    const str = red(` ${str1} ${cyan(str2)} `);
-    const len = Math.max(36 - str1.length - str2.length, 0);
-    const ws = ' '.repeat(Math.floor(len / 2));
-    print.info(gray(`--[${ws}${str} ${ws}]--`));
-    print.newline();
-  };
-
   const about = () => {
     print.info(gray(`Version ${meta.version()}\t\tMade with ♡ by Airship`));
     print.newline();
     print.newline();
   };
 
+  const dryNotice = () => {
+    if (optDry) {
+      print.newline();
+      print.warning('-------------------');
+      print.warning('-- D R Y   R U N --');
+      print.warning('-------------------');
+      print.newline();
+    }
+  };
+
   const postInstallInstructions = (projectName: string) => {
-    print.newline();
-    print.newline();
-    code(bgBlack(` `));
-    code(gray(`You are now ready to hack.`));
-    code(cyan(`cd ${projectName}`));
-    code(cyan(`yarn ios || yarn android `));
-    code(bgBlack(` `));
-    print.newline();
-    print.newline();
+    printV.newline();
+    printV.newline();
+    printV.code(bgBlack(` `));
+    printV.code(gray(`You are now ready to hack.`));
+    printV.code(cyan(`cd ${projectName}`));
+    printV.code(cyan(`yarn ios || yarn android `));
+    printV.code(bgBlack(` `));
+    printV.newline();
+    printV.newline();
   };
 
   type Task = { stop: () => void };
   const printTask = (msg: string): Task => {
-    print.info(msg);
+    printV.info(msg);
     const t = print.spin('');
     return {
       stop: () => t.stop(),
     };
   };
 
+  const runTask = async (msg: string, callback: () => Promise<void>) => {
+    const t = printTask(msg);
+    await callback();
+    t.stop();
+  };
+
   const loader = () => {
-    const t = print.spin(gray('loading...'));
+    const t = print.spin(gray(isVerbose ? 'loading...' : ''));
     return {
       stop: () => t.stop(),
     };
@@ -91,12 +90,12 @@ export const interfaceHelpers = (toolbox: Toolbox) => {
   const cmd = (c: string) => system.run(log(c));
 
   return {
-    code,
     title,
-    titleSecondary,
     about,
+    dryNotice,
     postInstallInstructions,
     printTask,
+    runTask,
     loader,
     loadWhile,
     cmd,

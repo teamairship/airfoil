@@ -30,17 +30,25 @@ Bump the version number for a React Native project.
 
 This updates the version in `package.json` as well as `ios/` and `android/` directories.
 
+**Args:**
+
+- `--update` (`-u`) - provide an exact version number
+- `--verbose` (`-v`) - print more detailed logs
+
 **Example:**
 
 ```
-# bump version number (patch release e.g. 0.0.1 -> 0.0.2)
+# bump version - patch release (e.g. 0.0.1 -> 0.0.2)
 airfoil version patch
 
-# bump version number (minor release e.g. 0.0.2 -> 0.1.0)
+# bump version - minor release (e.g. 0.0.2 -> 0.1.0)
 airfoil version minor
 
-# bump version number (major release e.g. 0.1.0 -> 1.0.0)
+# bump version - major release (e.g. 0.1.0 -> 1.0.0)
 airfoil version major
+
+# bump version to 2.3.4
+airfoil version -u 2.3.4
 ```
 
 ---
@@ -55,10 +63,14 @@ Add an ENV var.
 
 This updates `.env`, `.env.example`, `app/constants.ts`, and `appcenter-pre-build.sh` all in one go.
 
+NOTE: an ENV value of "true" or "false" is always interpreted as a boolean.
+
 **Args:**
 
 - `--boolean` (`--bool`, `-b`) - process as boolean ENV var
-- `--dry` (`-d`) - perform a dry test run (print out a Git diff of changes without changing any files)
+- `--comment` (`-c`) - add a comment for this ENV var
+- `--dry` (`-d`) - perform a dry test run _(print out a Git diff of changes without changing any files)_
+- `--verbose` (`-v`) - print more detailed logs
 
 **Example:**
 
@@ -69,11 +81,11 @@ airfoil add env
 # add env var SETUP=true
 airfoil add env setup=true
 
-# add env var TEST=true (alternate args)
+# add env var TEST=true (alternative format)
 airfoil add env test true
 
-# add env var DEV=true as a boolean
-airfoil add env dev=true --boolean
+# add env var DEV=mighty as a boolean
+airfoil add env dev=mighty --boolean
 
 # perform dry run
 airfoil add env API_KEY=abc123 --dry

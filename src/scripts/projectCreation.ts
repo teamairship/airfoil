@@ -1,6 +1,6 @@
-import { Toolbox } from 'gluegun/build/types/domain/toolbox';
-import { interfaceHelpers } from '../utils/interface';
+import { GluegunToolboxExtended } from '../extensions/extensions';
 import { AIRSHIP_EMAIL, DEFAULT_PROJECT_VERSION, RepoLocation } from '../constants';
+import { interfaceHelpers } from '../utils/interface';
 const decamelize = require('decamelize');
 
 /**
@@ -12,7 +12,7 @@ const decamelize = require('decamelize');
 export const cloneTemplateRepo = async (
   projectName: string,
   repo: RepoLocation,
-  toolbox: Toolbox,
+  toolbox: GluegunToolboxExtended,
 ) => {
   const { cmd, printTask } = interfaceHelpers(toolbox);
   const task = printTask('☀️  Opening hangar door...');
@@ -28,7 +28,7 @@ export const cloneTemplateRepo = async (
  * 4. Renames the "master" branch to "main"
  * @param toolbox the toolbox object supplied by Gluegun
  */
-export const initializeGit = async (toolbox: Toolbox) => {
+export const initializeGit = async (toolbox: GluegunToolboxExtended) => {
   const { cmd, printTask } = interfaceHelpers(toolbox);
   const task = printTask('🗺️  Creating flight plan and logging point of origin...');
   await cmd(`rm -rf .git`);
@@ -43,7 +43,7 @@ export const initializeGit = async (toolbox: Toolbox) => {
  * Installs all dependencies for a project, including pods.
  * @param toolbox the toolbox object supplied by Gluegun
  */
-export const installDependencies = async (toolbox: Toolbox) => {
+export const installDependencies = async (toolbox: GluegunToolboxExtended) => {
   const { cmd, printTask } = interfaceHelpers(toolbox);
   const task = printTask('🔧 Checking oil levels and fueling up...');
   await cmd(`yarn install --ignore-scripts`);
@@ -57,7 +57,10 @@ export const installDependencies = async (toolbox: Toolbox) => {
  * @param projectName the name of the project
  * @param toolbox the toolbox supplied by Gluegun
  */
-export const initializeProjectInfo = async (projectName: string, toolbox: Toolbox) => {
+export const initializeProjectInfo = async (
+  projectName: string,
+  toolbox: GluegunToolboxExtended,
+) => {
   const { template } = toolbox;
   const { cmd, printTask } = interfaceHelpers(toolbox);
   const task = printTask('🎛️  Setting altimeter and idling engine...');
@@ -81,7 +84,10 @@ export const initializeProjectInfo = async (projectName: string, toolbox: Toolbo
  * ./ios/[APP_NAME].xcodeproj, android app folder names, etc.)
  * @param projectName The name of the project
  */
-export const renameReactNativeProject = async (projectName: string, toolbox: Toolbox) => {
+export const renameReactNativeProject = async (
+  projectName: string,
+  toolbox: GluegunToolboxExtended,
+) => {
   const { cmd, printTask } = interfaceHelpers(toolbox);
   const task = printTask('🎙  Registering call sign...');
   await cmd(`npx react-native-rename ${projectName}`);

@@ -1,4 +1,4 @@
-import { GluegunToolbox } from 'gluegun';
+import { GluegunToolboxExtended } from '../extensions/extensions';
 import { interfaceHelpers } from './interface';
 
 const tmp = require('tmp');
@@ -9,16 +9,19 @@ const tmp = require('tmp');
  *
  * **Usage:**
  * ```
- * const [printDiff, cleanup] = toolPrintDiff(toolbox);
- * printDiff(originalContent, newContent);
+ * const { printDiff, cleanupPrintDiff } = toolbox;
+ * printDiff(originalContent, newContent, 'text.txt');
  * // call cleanup() once finished
  * cleanup();
  * ```
  * @param toolbox
  */
 export const toolPrintDiff = (
-  toolbox: GluegunToolbox,
-): [(originalContent: string, newContent: string) => Promise<void>, () => void] => {
+  toolbox: GluegunToolboxExtended,
+): [
+  (originalContent: string, newContent: string, fileName?: string) => Promise<void>,
+  () => void,
+] => {
   const { filesystem, print } = toolbox;
   const { gray, red, green } = print.colors;
   const { path } = filesystem;
@@ -29,10 +32,10 @@ export const toolPrintDiff = (
     tmpDir.removeCallback();
     filesystem.remove(tmpDirPath);
   };
-  const printDiff = async (originalContent: string, newContent: string) => {
+  const printDiff = async (originalContent: string, newContent: string, fileName?: string) => {
     const tempCwd = filesystem.cwd();
     process.chdir(tmpDirPath);
-    const tmpFileName = 'TEMP_CONTENT.txt';
+    const tmpFileName = fileName || 'TEMP_CONTENT.txt';
     const tmpFilepath = path(tmpDirPath, tmpFileName);
     filesystem.dir(tmpDirPath);
     filesystem.remove(path(tmpDirPath, '.git'));
