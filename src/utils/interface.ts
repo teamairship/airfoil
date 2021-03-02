@@ -59,8 +59,8 @@ export const interfaceHelpers = (toolbox: GluegunToolboxExtended) => {
 
   type Task = { stop: () => void };
   const printTask = (msg: string): Task => {
-    printV.info(msg);
-    const t = print.spin('');
+    if (isVerbose) print.info(msg);
+    const t = print.spin(isVerbose ? '' : msg);
     return {
       stop: () => t.stop(),
     };
@@ -73,7 +73,7 @@ export const interfaceHelpers = (toolbox: GluegunToolboxExtended) => {
   };
 
   const loader = () => {
-    const t = print.spin(gray(isVerbose ? 'loading...' : ''));
+    const t = print.spin(gray('loading...'));
     return {
       stop: () => t.stop(),
     };
