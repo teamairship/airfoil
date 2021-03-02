@@ -1,4 +1,6 @@
 import { snakeCase } from 'snake-case';
+import { format as formatDate } from 'date-fns';
+
 import { GluegunToolboxExtended } from '../extensions/extensions';
 import { getProjectName } from '../utils/meta';
 
@@ -43,6 +45,7 @@ export const generateAdr = async (
       context: adrContext,
       decision: adrDecision,
       consequences: adrConsequences,
+      createdAt: formatDate(new Date(), 'MMMM do, yyyy'),
     },
   });
   print.success(`${print.checkmark} Added ${PATH_ADRS}/${adrFileName}`);
