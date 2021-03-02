@@ -3,11 +3,18 @@ import { GluegunToolboxExtended } from '../extensions/extensions';
 import { getProjectName } from '../utils/meta';
 
 const PATH_ADRS = 'adr';
-const PATH_ADR_README = 'adr/__README__.md';
+const PATH_ADR_README = 'adr/0000_README.md';
 const REG_ADR_FILENAME = /^(\d{4})_.*\.md$/;
 const INITIAL_ADR_INDEX = 1;
 
-export const generateAdr = async (toolbox: GluegunToolboxExtended, adrTitle: string) => {
+export const generateAdr = async (
+  toolbox: GluegunToolboxExtended,
+  adrTitle: string,
+  adrStatus: string,
+  adrContext: string,
+  adrDecision: string,
+  adrConsequences: string,
+) => {
   const { filesystem, print } = toolbox;
   const { path, cwd } = filesystem;
   const pathAdrDir = path(cwd(), PATH_ADRS);
@@ -20,7 +27,7 @@ export const generateAdr = async (toolbox: GluegunToolboxExtended, adrTitle: str
   if (!filesystem.exists(PATH_ADR_README)) {
     const projectName = await getProjectName(toolbox);
     toolbox.template.generate({
-      template: 'adr-readme-template.ejs',
+      template: 'adr/adr-readme-template.ejs',
       target: PATH_ADR_README,
       props: { projectName },
     });
@@ -28,9 +35,15 @@ export const generateAdr = async (toolbox: GluegunToolboxExtended, adrTitle: str
   }
 
   toolbox.template.generate({
-    template: 'adr-template.ejs',
+    template: 'adr/adr-template.ejs',
     target: adrFilePath,
-    props: { title: adrTitle },
+    props: {
+      title: adrTitle,
+      status: adrStatus,
+      context: adrContext,
+      decision: adrDecision,
+      consequences: adrConsequences,
+    },
   });
   print.success(`${print.checkmark} Added ${PATH_ADRS}/${adrFileName}`);
 };

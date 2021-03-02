@@ -132,12 +132,30 @@ const questionsAdr = {
     name: 'adrTitle',
     message: "What is your ADR's title?",
   },
-};
-
-const promptAdrTitle = async (toolbox: GluegunToolboxExtended): Promise<string> => {
-  const { prompt } = toolbox;
-  const { adrTitle } = await prompt.ask([questionsAdr.adrTitle]);
-  return adrTitle;
+  adrStatus: {
+    type: 'select',
+    name: 'adrStatus',
+    message: 'What is the status?',
+    choices: [`accepted`, `proposed`, `rejected`, `deprecated`, `superseded`, `other`],
+  },
+  adrContext: {
+    type: 'input',
+    name: 'adrContext',
+    message:
+      "Context - What is the issue that we're seeing that is motivating this decision or change? (LEAVE BLANK TO SKIP)\n",
+  },
+  adrDecision: {
+    type: 'input',
+    name: 'adrDecision',
+    message:
+      "Decision - What is the change that we're proposing and/or doing? (LEAVE BLANK TO SKIP)\n",
+  },
+  adrConsequences: {
+    type: 'input',
+    name: 'adrConsequences',
+    message:
+      'Consequences - What becomes easier or more difficult to do because of this change? (LEAVE BLANK TO SKIP)\n',
+  },
 };
 
 /**
@@ -146,12 +164,17 @@ const promptAdrTitle = async (toolbox: GluegunToolboxExtended): Promise<string> 
  */
 const commandAdr = async (toolbox: GluegunToolboxExtended) => {
   const { parameters, print } = toolbox;
-  const adrTitle = parameters.second || (await promptAdrTitle(toolbox));
+  const { promptQuestion } = interfaceHelpers(toolbox);
+  const adrTitle = parameters.second || (await promptQuestion(questionsAdr.adrTitle));
   if (!adrTitle) {
     print.error(`ADR Title required for \`airfoil generate adr\``);
     process.exit(1);
   }
-  return generateAdr(toolbox, adrTitle);
+  const adrStatus: string = await promptQuestion(questionsAdr.adrStatus);
+  const adrContext: string = await promptQuestion(questionsAdr.adrContext);
+  const adrDecision: string = await promptQuestion(questionsAdr.adrDecision);
+  const adrConsequences: string = await promptQuestion(questionsAdr.adrConsequences);
+  return generateAdr(toolbox, adrTitle, adrStatus, adrContext, adrDecision, adrConsequences);
 };
 
 const questionsAppCenter = {
