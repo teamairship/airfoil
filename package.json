@@ -39,6 +39,7 @@
     "@types/node": "^12.7.11",
     "camelcase": "^6.2.0",
     "constant-case": "^3.0.4",
+    "date-fns": "^2.18.0",
     "decamelize": "^5.0.0",
     "jest": "^24.1.0",
     "prettier": "^1.12.1",
