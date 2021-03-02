@@ -1,3 +1,4 @@
+import { PromptOptions } from 'gluegun/build/types/toolbox/prompt-enquirer-types';
 import { GluegunToolboxExtended } from '../extensions/extensions';
 
 /**
@@ -7,7 +8,7 @@ import { GluegunToolboxExtended } from '../extensions/extensions';
  * @param toolbox
  */
 export const interfaceHelpers = (toolbox: GluegunToolboxExtended) => {
-  const { print, printV, parameters, system, meta } = toolbox;
+  const { prompt, print, printV, parameters, system, meta } = toolbox;
   const { red, gray, cyan, bgBlack } = print.colors;
   const { optDry, isVerbose } = toolbox.globalOpts;
 
@@ -48,6 +49,12 @@ export const interfaceHelpers = (toolbox: GluegunToolboxExtended) => {
     printV.code(bgBlack(` `));
     printV.newline();
     printV.newline();
+  };
+
+  const promptQuestion = async (question: PromptOptions): Promise<string> => {
+    const key: string = typeof question.name === 'function' ? question.name() : question.name;
+    const answer = await prompt.ask([question]);
+    return answer[key];
   };
 
   type Task = { stop: () => void };
@@ -94,6 +101,7 @@ export const interfaceHelpers = (toolbox: GluegunToolboxExtended) => {
     about,
     dryNotice,
     postInstallInstructions,
+    promptQuestion,
     printTask,
     runTask,
     loader,
