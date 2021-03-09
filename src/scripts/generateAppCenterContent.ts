@@ -64,8 +64,8 @@ export const generateAppCenterContent = async (
   });
 
   await addTemplateAndPromptIfExisting(toolbox, printDiff, {
-    template: 'appcenter/version-capture-script.sh.ejs',
-    target: 'version-capture-script.sh',
+    template: 'appcenter/version-capture-script.js.ejs',
+    target: 'version-capture-script.js',
   });
 
   cleanup();

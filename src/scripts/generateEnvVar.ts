@@ -69,5 +69,5 @@ const defaultContentConstants = async (toolbox: GluegunToolboxExtended) =>
 
 const defaultContentAppCenter = async (toolbox: GluegunToolboxExtended) =>
   toolbox.template.generate({
-    template: 'appcenter-pre-build.sh.ejs',
+    template: 'appcenter/appcenter-pre-build.sh.ejs',
   });
