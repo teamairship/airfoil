@@ -1,18 +1,7 @@
 import { GluegunCommand } from 'gluegun';
 import { print } from 'gluegun/print';
-
+import { Choice, questionProjectName, questionProjectType, Template } from '../constants';
 import { GluegunToolboxExtended } from '../extensions/extensions';
-import {
-  CHOICE_TEMPLATE_BLIMP,
-  CHOICE_TEMPLATE_JET,
-  CHOICE_TEMPLATE_PROPELLER,
-  questionProjectName,
-  questionProjectType,
-  TemplateType,
-  TEMPLATE_TYPE_BLIMP,
-  TEMPLATE_TYPE_JET,
-  TEMPLATE_TYPE_PROPELLER,
-} from '../constants';
 import {
   cloneTemplateRepo,
   initializeGit,
@@ -26,10 +15,10 @@ import { validations } from '../utils/validations';
 // see here for all possible colors: https://github.com/Marak/colors.js
 const { cyan, red, yellow } = print.colors;
 
-const templateAssociations: { [key: string]: TemplateType } = {
-  [CHOICE_TEMPLATE_BLIMP]: TEMPLATE_TYPE_BLIMP,
-  [CHOICE_TEMPLATE_JET]: TEMPLATE_TYPE_JET,
-  [CHOICE_TEMPLATE_PROPELLER]: TEMPLATE_TYPE_PROPELLER,
+const templateAssociations: { [key: string]: Template } = {
+  [Choice.blimp]: Template.blimp,
+  [Choice.jet]: Template.jet,
+  [Choice.propeller]: Template.propeller,
 };
 
 const command: GluegunCommand = {
@@ -65,14 +54,14 @@ const command: GluegunCommand = {
 
 const createProject = async (
   projectName: string,
-  template: TemplateType,
+  template: Template,
   toolbox: GluegunToolboxExtended,
 ) => {
   const { print, filesystem } = toolbox;
   const { log, postInstallInstructions } = interfaceHelpers(toolbox);
 
   // TODO: remove this when "Propeller" is ready
-  if (template === TEMPLATE_TYPE_PROPELLER) return print.info('Coming soon!');
+  if (template === Template.propeller) return print.info('Coming soon!');
 
   await cloneTemplateRepo(projectName, template, toolbox);
 

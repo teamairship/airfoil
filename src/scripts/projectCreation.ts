@@ -1,10 +1,5 @@
 import { GluegunToolboxExtended } from '../extensions/extensions';
-import {
-  AIRSHIP_EMAIL,
-  DEFAULT_PROJECT_VERSION,
-  TEMPLATES_REPO_URL,
-  TemplateType,
-} from '../constants';
+import { AIRSHIP_EMAIL, DEFAULT_PROJECT_VERSION, TEMPLATES_REPO_URL, Template } from '../constants';
 import { interfaceHelpers } from '../utils/interface';
 const decamelize = require('decamelize');
 
@@ -16,7 +11,7 @@ const decamelize = require('decamelize');
  */
 export const cloneTemplateRepo = async (
   projectName: string,
-  template: TemplateType,
+  template: Template,
   toolbox: GluegunToolboxExtended,
 ) => {
   const { cmd, printTask } = interfaceHelpers(toolbox);
