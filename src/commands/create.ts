@@ -1,6 +1,8 @@
 import { GluegunCommand } from 'gluegun';
 import { GluegunToolboxExtended } from '../extensions/extensions';
 import { FileCategory, questionFileCategory, questionFileName } from '../constants';
+import { interfaceHelpers } from '../utils/interface';
+import { validations } from '../utils/validations';
 
 function getDirectoryName(
   fileCategory: FileCategory,
@@ -25,6 +27,10 @@ const command: GluegunCommand = {
   alias: ['c', 'generate', 'g'],
   run: async (toolbox: GluegunToolboxExtended) => {
     const { parameters, prompt } = toolbox;
+    const { loadWhile } = interfaceHelpers(toolbox);
+    const { checkCurrentDirReactNativeProject } = validations(toolbox);
+
+    await loadWhile(checkCurrentDirReactNativeProject());
 
     const userCategoryInput = parameters.first;
     let fileCategory: FileCategory = FileCategory[userCategoryInput];
