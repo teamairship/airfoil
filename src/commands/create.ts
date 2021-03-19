@@ -26,7 +26,7 @@ const command: GluegunCommand = {
   name: 'create',
   alias: ['c', 'generate', 'g'],
   run: async (toolbox: GluegunToolboxExtended) => {
-    const { parameters, prompt } = toolbox;
+    const { parameters, prompt, print } = toolbox;
     const { loadWhile } = interfaceHelpers(toolbox);
     const { checkCurrentDirReactNativeProject } = validations(toolbox);
 
@@ -34,7 +34,7 @@ const command: GluegunCommand = {
 
     const userCategoryInput = parameters.first;
     let fileCategory: FileCategory = FileCategory[userCategoryInput];
-    let fileName = parameters.options['n'];
+    let fileName = parameters.second;
     let folderName = parameters.options['f'];
 
     if (!fileCategory) {
@@ -59,6 +59,8 @@ const command: GluegunCommand = {
       target: directoryName,
       props: { fileName },
     });
+
+    print.success(`${fileCategory} successfully created in ${directoryName}`);
   },
 };
 
