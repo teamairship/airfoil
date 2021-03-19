@@ -1,3 +1,5 @@
+![Airfoil](/assets/airfoilLogo@2x.png)
+
 # Airfoil CLI
 
 A tool to get your project off the ground. :airplane:
