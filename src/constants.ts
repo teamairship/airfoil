@@ -68,3 +68,10 @@ export const questionFileName = {
   name: 'name',
   message: 'What would you like to name your file?',
 };
+
+export const questionTakenFileName = {
+  type: 'input',
+  name: 'name',
+  message:
+    "Looks like there's already a file with that name. What would you like to name your file?",
+};
