@@ -4,16 +4,16 @@ export enum TemplateType {
   propeller = 'propeller',
 }
 
-//------------------------
-//------- GENERAL --------
-//------------------------
+// ------------------------
+// ------- GENERAL --------
+// ------------------------
 export const REACT_NATIVE_INIT = 'npx react-native init';
 export const AIRSHIP_EMAIL = 'builders@teamairship.com';
 export const DEFAULT_PROJECT_VERSION = '0.0.1';
 
-//------------------------
-//------- CHOICES --------
-//------------------------
+// ------------------------
+// ------- CHOICES --------
+// ------------------------
 export enum Choice {
   blimp = 'Blimp: React Context + REST',
   jet = 'Jet: GraphQL + Apollo State',
@@ -22,9 +22,9 @@ export enum Choice {
   no = 'No',
 }
 
-//------------------------
-//---- TEMPLATES ----
-//------------------------
+// ------------------------
+// ---- TEMPLATES ----
+// ------------------------
 export const TEMPLATES_REPO_URL = 'git@github.com:teamairship/airfoil-schematics.git';
 
 export enum Template {
@@ -38,9 +38,9 @@ export enum FileCategory {
   hook = 'Hook',
 }
 
-//------------------------
-//------ QUESTIONS -------
-//------------------------
+// ------------------------
+// ------ QUESTIONS -------
+// ------------------------
 export const questionProjectName = {
   type: 'input',
   name: 'name',

@@ -75,7 +75,7 @@ const command: GluegunCommand = {
     // should be named starting with a capital letter, and custom hook names should always start
     // with "use".
 
-    toolbox.template.generate({
+    await toolbox.template.generate({
       template: `fileCreation/${fileCategory}.ejs`,
       target: directoryName,
       props: { fileName },

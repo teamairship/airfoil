@@ -15,7 +15,7 @@ const command = {
 
     await loadWhile(checkCurrentDirReactNativeProject());
 
-    updateVersion(toolbox);
+    await updateVersion(toolbox);
   },
 };
 

@@ -28,7 +28,7 @@ export const generateAdr = async (
 
   if (!filesystem.exists(PATH_ADR_README)) {
     const projectName = await getProjectName(toolbox);
-    toolbox.template.generate({
+    await toolbox.template.generate({
       template: 'adr/adr-readme-template.ejs',
       target: PATH_ADR_README,
       props: { projectName },
@@ -36,7 +36,7 @@ export const generateAdr = async (
     print.success(`${print.checkmark} Added ${PATH_ADR_README}`);
   }
 
-  toolbox.template.generate({
+  await toolbox.template.generate({
     template: 'adr/adr-template.ejs',
     target: adrFilePath,
     props: {
