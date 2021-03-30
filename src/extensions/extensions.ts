@@ -58,9 +58,9 @@ module.exports = (toolbox: GluegunToolbox) => {
   //
   // Only print if the `-v` (verbose) option is supplied
   const printV: PrintV = {
-    info: isVerbose ? print.info : () => {},
-    newline: isVerbose ? print.newline : () => {},
-    success: isVerbose ? print.success : () => {},
+    info: isVerbose ? print.info : () => undefined,
+    newline: isVerbose ? print.newline : () => undefined,
+    success: isVerbose ? print.success : () => undefined,
     code: (msg = '') => {
       if (!msg) return printV.code(bgBlack(` `));
       const len = Math.max(60 - msg.length, 0);

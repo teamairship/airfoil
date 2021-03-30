@@ -34,8 +34,9 @@ function getCursorForNewImports(str: string) {
   if (cursorA > -1) cursorsFound.push(cursorA);
   if (cursorB > -1) cursorsFound.push(cursorB);
   if (cursorC > -1) cursorsFound.push(cursorC);
-  if (!cursorsFound.length)
+  if (!cursorsFound.length) {
     throw new Error('Could not update `AppDelegate.m` - imports in unexpected format');
+  }
   return Math.min(...cursorsFound);
 }
 
@@ -47,8 +48,9 @@ const CONTENT_APP_DELEGATE_IMPORTS = `
 `;
 
 export function updateAppDelegateImports(existingContent: string) {
-  if (existingContent.indexOf(CONTENT_APP_DELEGATE_IMPORTS.trim()) > -1)
+  if (existingContent.indexOf(CONTENT_APP_DELEGATE_IMPORTS.trim()) > -1) {
     throw new Error('appcenter imports already exist in `AppDelegate.m`');
+  }
   const cursor = getCursorForNewImports(existingContent);
   return (
     existingContent.slice(0, cursor) + CONTENT_APP_DELEGATE_IMPORTS + existingContent.slice(cursor)
@@ -66,10 +68,11 @@ function getCursorDidfinishLaunchingWithOptions(str: string) {
   // match full `didFinishLaunchingWithOptions` method from its start to its return statement
   const reg = /-\s.* didFinishLaunchingWithOptions\:\(.*\)launchOptions\s*\n*{\n*(.|\n)*?(return YES;)/;
   const matches = str.match(reg);
-  if (!matches || !matches.length)
+  if (!matches || !matches.length) {
     throw new Error(
       'Could not update `AppDelegate.m` - `didFinishLaunchingWithOptions` method not in expected format',
     );
+  }
   const fullMatch = matches[0];
   const returnStatement = 'return YES;';
   const cursorPos = str.indexOf(fullMatch) + fullMatch.length - returnStatement.length;
@@ -77,10 +80,11 @@ function getCursorDidfinishLaunchingWithOptions(str: string) {
 }
 
 export function updateAppDelegateDidFinishLaunchingWithOptions(existingContent: string) {
-  if (existingContent.indexOf(CONTENT_DID_FINISH_LAUNCHING_WITH_OPTIONS.trim()) > -1)
+  if (existingContent.indexOf(CONTENT_DID_FINISH_LAUNCHING_WITH_OPTIONS.trim()) > -1) {
     throw new Error(
       'appcenter `didFinishLaunchingWithOptions` lines already exist in `AppDelegate.m`',
     );
+  }
   const cursor = getCursorDidfinishLaunchingWithOptions(existingContent);
   return (
     existingContent.slice(0, cursor) +

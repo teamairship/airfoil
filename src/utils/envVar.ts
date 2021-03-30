@@ -34,8 +34,9 @@ export const addEnvVar = (
 ): string => {
   if (!envKey) throw new Error('ENV key is required.');
 
-  if (new RegExp(`^${constantCase(envKey)}=.*$`, 'gim').test(existingContent))
+  if (new RegExp(`^${constantCase(envKey)}=.*$`, 'gim').test(existingContent)) {
     throw new Error(`ENV key "${constantCase(envKey)}" already exists in .env`);
+  }
 
   const contentWithoutEndingNewLines = existingContent.replace(REG_FILE_END, '');
   const comment = envComment ? `# ${envComment.replace(REG_ENV_COMMENT_START, '')}\n` : '';
@@ -62,8 +63,9 @@ export const addConstant = (
   const ENV = constantCase(envKey);
 
   const regAlreadyExists = new RegExp(`^export${WS}const${WS}${ENV}${WS}=${WS}.*$`, 'gim');
-  if (regAlreadyExists.test(existingContent))
+  if (regAlreadyExists.test(existingContent)) {
     throw new Error(`ENV key "${ENV}" already exists in constants.ts`);
+  }
 
   const contentWithoutEndingNewLines = existingContent.replace(REG_FILE_END, '');
   const comment = envComment
@@ -90,8 +92,9 @@ export const addAppCenterVar = (content: string = '', envKey: string = ''): stri
 
   const ENV = constantCase(envKey);
   const regAlreadyExists = new RegExp(`echo${WS}"${ENV}=`, 'gim');
-  if (regAlreadyExists.test(content))
+  if (regAlreadyExists.test(content)) {
     throw new Error(`ENV key "${ENV}" already exists in appcenter-pre-build.sh`);
+  }
 
   let cursorStart = 0;
   let cursorEnd = 0;

@@ -48,7 +48,7 @@ const command: GluegunCommand = {
 
     const { type } = await prompt.ask([questionProjectType]);
 
-    createProject(projectName, templateAssociations[type], toolbox);
+    await createProject(projectName, templateAssociations[type], toolbox);
   },
 };
 
@@ -65,8 +65,9 @@ const createProject = async (
 
   await cloneTemplateRepo(projectName, template, toolbox);
 
-  if (!filesystem.exists(`${projectName}/package.json`))
+  if (!filesystem.exists(`${projectName}/package.json`)) {
     throw new Error(`Something went wrong. ${projectName}/package.json file not found.`);
+  }
 
   log(`changing directory to \`${projectName}\``);
   process.chdir(projectName);
