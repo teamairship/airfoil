@@ -37,8 +37,10 @@ const command: GluegunCommand = {
 
     await loadWhile(checkCurrentDirReactNativeProject());
 
-    const userCategoryInput = parameters.first.toLowerCase();
-    let fileCategory: FileCategory = FileCategory[userCategoryInput];
+    const userCategoryInput = parameters.first ? parameters.first.toLowerCase() : '';
+    let fileCategory: FileCategory | undefined = userCategoryInput
+      ? FileCategory[userCategoryInput]
+      : undefined;
     let fileName = parameters.second ? parameters.second : '';
     let fileNameFinalized = false;
     let folderName = parameters.options['f'];
