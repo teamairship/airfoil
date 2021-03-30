@@ -6,14 +6,24 @@ import { generateEnvVar } from '../scripts/generateEnvVar';
 import { interfaceHelpers } from '../utils/interface';
 import { stripQuotes } from '../utils/formatting';
 import { validations } from '../utils/validations';
-import { generateAppCenterContent } from '../scripts/generateAppCenterContent';
 import { getProjectName } from '../utils/meta';
+import { generateAppCenterContent } from '../scripts/generateAppCenterContent';
+import { generateSplashScreenContent } from '../scripts/generateSplashScreenContent';
 
 const TYPE_ENV = 'env';
 const TYPE_ADR = 'adr';
 const TYPE_APPCENTER = 'appcenter';
 const TYPE_APPCENTER_ALT = 'app-center';
-const VALID_TYPES = [TYPE_ENV, TYPE_ADR, TYPE_APPCENTER, TYPE_APPCENTER_ALT];
+const TYPE_SPLASHSCREEN = 'splashscreen';
+const TYPE_SPLASHSCREEN_ALT = 'splash-screen';
+const VALID_TYPES = [
+  TYPE_ENV,
+  TYPE_ADR,
+  TYPE_APPCENTER,
+  TYPE_APPCENTER_ALT,
+  TYPE_SPLASHSCREEN,
+  TYPE_SPLASHSCREEN_ALT,
+];
 type ENV_TYPE = 'string' | 'boolean';
 
 const command = {
@@ -43,6 +53,10 @@ const command = {
       case TYPE_APPCENTER:
       case TYPE_APPCENTER_ALT:
         return commandAppCenter(toolbox);
+
+      case TYPE_SPLASHSCREEN:
+      case TYPE_SPLASHSCREEN_ALT:
+        return commandSplashScreen(toolbox);
 
       default:
         return printInvalidArgs(toolbox);
@@ -77,7 +91,7 @@ const promptEnvVal = async (toolbox: GluegunToolboxExtended): Promise<string> =>
 
 const printInvalidArgs = (toolbox: GluegunToolboxExtended) => {
   const { print } = toolbox;
-  print.error(`\`airfoil generate <type>\` expects type to be one of [${VALID_TYPES.join('|')}]`);
+  print.error(`\`airfoil add <type>\` expects type to be one of [${VALID_TYPES.join('|')}]`);
 };
 
 /**
@@ -207,6 +221,23 @@ const commandAppCenter = async (toolbox: GluegunToolboxExtended) => {
   }
 
   await generateAppCenterContent(toolbox, projectName, appCenterSecret);
+};
+
+const commandSplashScreen = async (toolbox: GluegunToolboxExtended) => {
+  const { cmd, runTask } = interfaceHelpers(toolbox);
+  const { print } = toolbox;
+  const { optDry } = toolbox.globalOpts;
+
+  const projectName = await getProjectName(toolbox);
+
+  if (!optDry) {
+    print.info('🔧 installing splashscreen deps...');
+    await runTask('', async () => {
+      await cmd('yarn add react-native-splash-screen');
+    });
+  }
+
+  await generateSplashScreenContent(toolbox, projectName);
 };
 
 module.exports = command;

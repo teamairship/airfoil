@@ -1,5 +1,3 @@
-import { GluegunTemplateGenerateOptions } from 'gluegun/build/types/toolbox/template-types';
-
 import { GluegunToolboxExtended } from '../extensions/extensions';
 import { toolPrintDiff } from '../utils/diff';
 import { updateFileWithNewContent } from '../utils/filesystem';
@@ -9,6 +7,7 @@ import {
   updateAppDelegateImports,
 } from '../utils/appcenter/updateAppDelegate';
 import { interfaceHelpers } from '../utils/interface';
+import { addTemplateAndPromptIfExisting } from '../utils/template';
 
 export const generateAppCenterContent = async (
   toolbox: GluegunToolboxExtended,
@@ -69,40 +68,4 @@ export const generateAppCenterContent = async (
   });
 
   cleanup();
-};
-
-const addTemplateAndPromptIfExisting = async (
-  toolbox: GluegunToolboxExtended,
-  printDiff: (originalContent: string, newContent: string, fileName?: string) => Promise<void>,
-  generateOptions: GluegunTemplateGenerateOptions,
-) => {
-  const { template, filesystem, prompt, print } = toolbox;
-  const { optDry } = toolbox.globalOpts;
-  const { yellow } = print.colors;
-  const { target } = generateOptions;
-
-  if (optDry) {
-    const generated = await template.generate({
-      ...generateOptions,
-      target: undefined,
-    });
-    await printDiff('', generated, target);
-    return;
-  }
-
-  let textAction = 'added';
-  if (filesystem.exists(target)) {
-    const { confirmed } = await prompt.ask([
-      {
-        type: 'confirm',
-        name: 'confirmed',
-        message: `${yellow(target)} already exists - overwrite?`,
-      },
-    ]);
-    if (!confirmed) return;
-    textAction = 'updated';
-  }
-
-  await template.generate(generateOptions);
-  print.success(`${print.checkmark} ${textAction} ${target}`);
 };
