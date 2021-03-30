@@ -1,6 +1,11 @@
 import { GluegunCommand } from 'gluegun';
 import { GluegunToolboxExtended } from '../extensions/extensions';
-import { FileCategory, questionFileCategory, questionFileName } from '../constants';
+import {
+  FileCategory,
+  questionFileCategory,
+  questionFileName,
+  questionTakenFileName,
+} from '../constants';
 import { interfaceHelpers } from '../utils/interface';
 import { validations } from '../utils/validations';
 
@@ -26,21 +31,23 @@ const command: GluegunCommand = {
   name: 'create',
   alias: ['c', 'generate', 'g'],
   run: async (toolbox: GluegunToolboxExtended) => {
-    const { parameters, prompt, print } = toolbox;
+    const { filesystem, parameters, prompt, print } = toolbox;
     const { loadWhile } = interfaceHelpers(toolbox);
     const { checkCurrentDirReactNativeProject } = validations(toolbox);
 
     await loadWhile(checkCurrentDirReactNativeProject());
 
-    const userCategoryInput = parameters.first;
+    const userCategoryInput = parameters.first.toLowerCase();
     let fileCategory: FileCategory = FileCategory[userCategoryInput];
-    let fileName = parameters.second;
+    let fileName = parameters.second ? parameters.second : '';
+    let fileNameFinalized = false;
     let folderName = parameters.options['f'];
+    let directoryName = '';
 
     if (!fileCategory) {
       const informBadInput = userCategoryInput && !fileCategory;
       const { category } = await prompt.ask([questionFileCategory(informBadInput)]);
-      fileCategory = category;
+      fileCategory = FileCategory[category.toLowerCase()];
     }
 
     if (!fileName) {
@@ -48,7 +55,19 @@ const command: GluegunCommand = {
       fileName = name;
     }
 
-    const directoryName = getDirectoryName(fileCategory, fileName, folderName);
+    directoryName = getDirectoryName(fileCategory, fileName, folderName);
+
+    if (!filesystem.exists(directoryName)) fileNameFinalized = true;
+
+    while (!fileNameFinalized) {
+      const { name } = await prompt.ask([questionTakenFileName]);
+      print.info(`answer => ${name}`);
+      fileName = name;
+      if (!filesystem.exists(getDirectoryName(fileCategory, name, folderName))) {
+        directoryName = getDirectoryName(fileCategory, name, folderName);
+        fileNameFinalized = true;
+      }
+    }
 
     // TODO: add filename checking to make sure files are named correctly. For example, components
     // should be named starting with a capital letter, and custom hook names should always start
