@@ -1,0 +1,19 @@
+import { useState } from 'react';
+
+interface State {
+  // define your state type here
+}
+
+interface HookReturn extends State {
+  // add your hook method types here, or
+  // anything else the hook will be returning
+}
+
+
+export const <%= props.fileName %> = (): HookReturn => {
+  const [state, setState] = useState();
+
+  // add methods here
+
+  return state;
+};

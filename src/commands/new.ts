@@ -1,66 +1,83 @@
 import { GluegunCommand } from 'gluegun';
-import { Toolbox } from 'gluegun/build/types/domain/toolbox';
+import { print } from 'gluegun/print';
+import { Choice, questionProjectName, questionProjectType, Template } from '../constants';
+import { GluegunToolboxExtended } from '../extensions/extensions';
 import {
-  REACT_NATIVE_INIT,
-  TEMPLATE,
-  blimpDependencies,
-  projectNameQuestion,
-  projectTypeQuestion,
-} from '../utils/constants';
+  cloneTemplateRepo,
+  initializeGit,
+  initializeProjectInfo,
+  installDependencies,
+  renameReactNativeProject,
+} from '../scripts/projectCreation';
+import { interfaceHelpers } from '../utils/interface';
+import { validations } from '../utils/validations';
+
+// see here for all possible colors: https://github.com/Marak/colors.js
+const { cyan, red, yellow } = print.colors;
+
+const templateAssociations: { [key: string]: Template } = {
+  [Choice.blimp]: Template.blimp,
+  [Choice.jet]: Template.jet,
+  [Choice.propeller]: Template.propeller,
+};
 
 const command: GluegunCommand = {
   name: 'new',
-  alias: 'n',
-  run: async toolbox => {
+  alias: ['n', 'init'],
+  run: async (toolbox: GluegunToolboxExtended) => {
     const { parameters, print, prompt } = toolbox;
+    const { title, about, loadWhile } = interfaceHelpers(toolbox);
+    const { validateProjectName, checkCocoaPodsInstalled } = validations(toolbox);
+
+    title();
+    about();
+
+    await loadWhile(checkCocoaPodsInstalled());
 
     let projectName: string;
 
     if (parameters.first) {
       projectName = parameters.first;
+      if (parameters.second) print.info(yellow(`All args ignored except for ${cyan(projectName)}`));
     } else {
-      const { name } = await prompt.ask([projectNameQuestion]);
+      const { name } = await prompt.ask([questionProjectName]);
       projectName = name;
     }
 
-    const { type } = await prompt.ask([projectTypeQuestion]);
+    validateProjectName(projectName);
 
-    switch (type) {
-      case 'Blimp: React Context + REST':
-        return createBlimpProject(toolbox, projectName);
+    const { type } = await prompt.ask([questionProjectType]);
 
-      case 'Propeller: Redux + REST':
-        return print.info('Coming soon!');
-
-      case 'Jet: GraphQL + Apollo State':
-        return print.info('Coming soon!');
-
-      default:
-        return;
-    }
+    createProject(projectName, templateAssociations[type], toolbox);
   },
 };
 
-const createBlimpProject = async (toolbox: Toolbox, projectName: string) => {
-  const { print, system } = toolbox;
-  const dependencies = blimpDependencies.reduce((acc, item) => `${acc} ${item}`);
+const createProject = async (
+  projectName: string,
+  template: Template,
+  toolbox: GluegunToolboxExtended,
+) => {
+  const { print, filesystem } = toolbox;
+  const { log, postInstallInstructions } = interfaceHelpers(toolbox);
 
-  // Create React Native project
-  const createSpinner = print.spin('Creating your React Native Project...');
-  await system.run(`${REACT_NATIVE_INIT} ${projectName} ${TEMPLATE}`);
-  createSpinner.stop();
+  // TODO: remove this when "Propeller" is ready
+  if (template === Template.propeller) return print.info('Coming soon!');
 
-  // Install Dependencies
-  const installDependenciesSpinner = print.spin('Installing project dependencies');
-  await system.run(`cd ${projectName} && yarn add ${dependencies} && cd ../`);
-  installDependenciesSpinner.stop();
+  await cloneTemplateRepo(projectName, template, toolbox);
 
-  // Install Pods
-  const installPodsSpinner = print.spin('Installing pods...');
-  await system.run(`cd ${projectName}/ios && pod install && cd ../`);
-  installPodsSpinner.stop();
+  if (!filesystem.exists(`${projectName}/package.json`))
+    throw new Error(`Something went wrong. ${projectName}/package.json file not found.`);
 
-  print.success(`${projectName} has been created!`);
+  log(`changing directory to \`${projectName}\``);
+  process.chdir(projectName);
+
+  await renameReactNativeProject(projectName, toolbox);
+  await installDependencies(toolbox);
+  await initializeProjectInfo(projectName, toolbox);
+  await initializeGit(toolbox);
+
+  print.success(`${red(projectName)} successfully created. You're ready for takeoff. ✈️`);
+  postInstallInstructions(projectName);
 };
 
 module.exports = command;

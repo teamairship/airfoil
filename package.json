@@ -1,8 +1,8 @@
 {
-  "name": "airfoil",
+  "name": "@airship/airfoil",
   "version": "0.0.1",
   "description": "airfoil CLI",
-  "private": true,
+  "private": false,
   "types": "build/types/types.d.ts",
   "bin": {
     "airfoil": "bin/airfoil"
@@ -34,16 +34,23 @@
     "gluegun": "latest"
   },
   "devDependencies": {
-    "@types/node": "^12.7.11",
+    "@types/decamelize": "^3.0.3",
     "@types/jest": "^24.0.18",
-    "ts-node": "^8.4.1",
+    "@types/node": "^12.7.11",
+    "camelcase": "^6.2.0",
+    "constant-case": "^3.0.4",
+    "date-fns": "^2.18.0",
+    "decamelize": "^5.0.0",
+    "jest": "^24.1.0",
+    "prettier": "^1.12.1",
+    "snake-case": "^3.0.4",
+    "tmp": "^0.2.1",
     "ts-jest": "^24.1.0",
+    "ts-node": "^8.4.1",
     "tslint": "^5.12.0",
     "tslint-config-prettier": "^1.17.0",
     "tslint-config-standard": "^8.0.1",
-    "typescript": "^3.6.3",
-    "prettier": "^1.12.1",
-    "jest": "^24.1.0"
+    "typescript": "^3.6.3"
   },
   "jest": {
     "preset": "ts-jest",
@@ -54,5 +61,22 @@
     "singleQuote": true,
     "printWidth": 100,
     "trailingComma": "all"
-  }
+  },
+  "main": "./bin/airfoil",
+  "directories": {
+    "doc": "docs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/teamairship/airfoil.git"
+  },
+  "keywords": [
+    "boilerplate",
+    "react-native"
+  ],
+  "author": "Mark Kozlowski",
+  "bugs": {
+    "url": "https://github.com/teamairship/airfoil/issues"
+  },
+  "homepage": "https://github.com/teamairship/airfoil#readme"
 }
