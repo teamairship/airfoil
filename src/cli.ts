@@ -9,7 +9,6 @@ async function run(argv) {
     .brand('airfoil')
     .src(__dirname)
     .plugins('./node_modules', { matching: 'airfoil-*', hidden: true })
-    .version()
     .checkForUpdates(5)
     .help() // provides default for help, h, --help, -h
     .create();

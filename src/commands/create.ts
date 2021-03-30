@@ -24,7 +24,7 @@ function getDirectoryName(
     subFolder = folderName ? `${folderName}/` : '';
   }
 
-  return `${APP_DIRECTORY}${folder}${subFolder}${fileName}/${fileName}.tsx`;
+  return `${APP_DIRECTORY}${folder}${subFolder}${fileName}.tsx`;
 }
 
 const command: GluegunCommand = {
