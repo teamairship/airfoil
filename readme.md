@@ -23,7 +23,7 @@ npm install @airship/airfoil -g
 airfoil <CMD>
 ```
 
-[See available commands here](./docs/commands.md).
+[See Airfoil Documentation](https://airfoil-docs.herokuapp.com/) ([Docs sourcecode](https://github.com/teamairship/airfoil-docs)).
 
 ---
 
