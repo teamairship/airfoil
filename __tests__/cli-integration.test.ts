@@ -6,5 +6,5 @@ const cli = async cmd => system.run('node ' + filesystem.path(src, 'bin', 'airfo
 
 test('outputs help', async () => {
   const output = await cli('--help');
-  expect(output).toContain('0.1.1');
+  expect(output).toContain('airfoil version');
 });
