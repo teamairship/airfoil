@@ -22,8 +22,8 @@ const templateAssociations: { [key: string]: Template } = {
 };
 
 const command: GluegunCommand = {
-  name: 'new',
-  alias: ['n', 'init'],
+  name: 'init',
+  alias: ['i', 'new'],
   run: async (toolbox: GluegunToolboxExtended) => {
     const { parameters, print, prompt } = toolbox;
     const { title, about, loadWhile } = interfaceHelpers(toolbox);
