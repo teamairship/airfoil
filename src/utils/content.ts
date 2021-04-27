@@ -1,4 +1,6 @@
 import { GluegunToolbox } from 'gluegun';
+import { GluegunTemplateGenerateOptions } from 'gluegun/build/types/toolbox/template-types';
+import { GluegunToolboxExtended } from '../extensions/extensions';
 
 /**
  * Tool: `getFileContent`
@@ -32,4 +34,29 @@ export const toolGetFileContent = (toolbox: GluegunToolbox) => (
 
   const content = filesystem.read(filePath);
   return content;
+};
+
+export const addTemplateAndPromptIfExisting = async (
+  toolbox: GluegunToolboxExtended,
+  generateOptions: GluegunTemplateGenerateOptions,
+) => {
+  const { template, filesystem, prompt, print } = toolbox;
+  const { yellow } = print.colors;
+  const { target } = generateOptions;
+
+  let textAction = 'added';
+  if (filesystem.exists(target)) {
+    const { confirmed } = await prompt.ask([
+      {
+        type: 'confirm',
+        name: 'confirmed',
+        message: `${yellow(target)} already exists - overwrite?`,
+      },
+    ]);
+    if (!confirmed) return;
+    textAction = 'updated';
+  }
+
+  await template.generate(generateOptions);
+  print.success(`${print.checkmark} ${textAction} ${target}`);
 };
