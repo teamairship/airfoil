@@ -1,4 +1,4 @@
-import { GluegunToolbox } from 'gluegun';
+import { GluegunPrint, GluegunToolbox } from 'gluegun';
 
 type Log = (m: string) => string;
 type GlobalOpts = {
@@ -12,13 +12,17 @@ type PrintV = {
   info: (msg: string) => void;
   newline: () => void;
   success: (msg: string) => void;
-  code: (msg: string) => void;
+  code: (msg: string, width?: number) => void;
 };
+interface PrintExt extends GluegunPrint {
+  code: (msg: string, width?: number) => void;
+}
 
 export interface GluegunToolboxExtended extends GluegunToolbox {
   globalOpts: GlobalOpts;
   log: Log;
   printV: PrintV;
+  print: PrintExt;
 }
 
 const DE_FACTO_VERBOSE_COMMANDS = ['new', 'print'];
@@ -54,6 +58,19 @@ module.exports = (toolbox: GluegunToolbox) => {
   toolbox.log = log;
 
   //
+  // EXTEND PRINT COMMAND
+  //
+  function printCode(msg = '', width = 60) {
+    if (!msg) return printCode(bgBlack(` `), width);
+    const strip = toolbox.print.colors.stripColors;
+    const len = Math.max(width - strip(msg).length, 0);
+    const ws = ' '.repeat(len);
+    toolbox.print.info(`\t${bgBlack(`  ${msg}${ws}  `)}`);
+  }
+  // @ts-ignore
+  toolbox.print.code = printCode;
+
+  //
   // PRINT EXTENSIONS
   //
   // Only print if the `-v` (verbose) option is supplied
@@ -61,9 +78,9 @@ module.exports = (toolbox: GluegunToolbox) => {
     info: isVerbose ? print.info : () => undefined,
     newline: isVerbose ? print.newline : () => undefined,
     success: isVerbose ? print.success : () => undefined,
-    code: (msg = '') => {
+    code: (msg = '', width = 60) => {
       if (!msg) return printV.code(bgBlack(` `));
-      const len = Math.max(60 - msg.length, 0);
+      const len = Math.max(width - msg.length, 0);
       const ws = ' '.repeat(len);
       printV.info(`\t${bgBlack(`  ${msg}${ws}  `)}`);
     },

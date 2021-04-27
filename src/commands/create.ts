@@ -49,6 +49,7 @@ const command: GluegunCommand = {
     if (!fileCategory) {
       const informBadInput = userCategoryInput && !fileCategory;
       const { category } = await prompt.ask([questionFileCategory(informBadInput)]);
+      // @ts-ignore
       fileCategory = FileCategory[category.toLowerCase()];
     }
 
