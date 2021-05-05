@@ -176,6 +176,7 @@ const parseViewBox = (content: string) => {
     height: Number(matches[4]),
   };
 };
+// tslint:disable-next-line:variable-name
 export const __test__parseViewBox = parseViewBox;
 
 // see: https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/color
