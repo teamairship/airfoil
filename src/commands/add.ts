@@ -1,3 +1,5 @@
+import * as _ from 'lodash';
+import * as dashify from 'dashify';
 import { constantCase } from 'constant-case';
 
 import { GluegunToolboxExtended } from '../extensions/extensions';
@@ -8,12 +10,15 @@ import { stripQuotes } from '../utils/formatting';
 import { validations } from '../utils/validations';
 import { generateAppCenterContent } from '../scripts/generateAppCenterContent';
 import { getProjectName } from '../utils/meta';
+import { generatePassword } from '../utils/password';
+import { addTemplateAndPromptIfExisting } from '../utils/content';
 
 const TYPE_ENV = 'env';
 const TYPE_ADR = 'adr';
 const TYPE_APPCENTER = 'appcenter';
 const TYPE_APPCENTER_ALT = 'app-center';
-const VALID_TYPES = [TYPE_ENV, TYPE_ADR, TYPE_APPCENTER, TYPE_APPCENTER_ALT];
+const TYPE_KEYSTORE = 'keystore';
+const VALID_TYPES = [TYPE_ENV, TYPE_ADR, TYPE_APPCENTER, TYPE_APPCENTER_ALT, TYPE_KEYSTORE];
 type ENV_TYPE = 'string' | 'boolean';
 
 const command = {
@@ -43,6 +48,9 @@ const command = {
       case TYPE_APPCENTER:
       case TYPE_APPCENTER_ALT:
         return commandAppCenter(toolbox);
+
+      case TYPE_KEYSTORE:
+        return commandKeystore(toolbox);
 
       default:
         return printInvalidArgs(toolbox);
@@ -207,6 +215,77 @@ const commandAppCenter = async (toolbox: GluegunToolboxExtended) => {
   }
 
   await generateAppCenterContent(toolbox, projectName, appCenterSecret);
+};
+
+const commandKeystore = async (toolbox: GluegunToolboxExtended) => {
+  const { cmd, runTask, loadWhile } = interfaceHelpers(toolbox);
+  const { print, filesystem } = toolbox;
+  const { bgYellow, black, bold, gray, cyan, dim, green } = toolbox.print.colors;
+
+  const projectName = await loadWhile(getProjectName(toolbox));
+  const keyAlias = `${dashify(projectName)}-dist`;
+  const keystoreFilename = `${keyAlias}.keystore`;
+  const keystoreFilepath = `android/app/${keystoreFilename}`;
+  const keystorePassword = generatePassword(50);
+  const keyPassword = generatePassword(50);
+
+  const commonName = 'Airship Builder';
+  const unit = 'IT';
+  const org = 'Airship LLC';
+  const city = 'Birmingham';
+  const state = 'AL';
+  const country = 'US';
+
+  if (filesystem.exists(keystoreFilepath)) {
+    print.error(`${keystoreFilepath} already exists.`);
+    process.exit(1);
+  }
+
+  await runTask('🔑  generating keystore...', async () => {
+    await cmd(`cd android/app && keytool -genkeypair -v \
+    -dname "CN=${commonName}, OU=${unit}, O=${org}, L=${city}, S=${state}, C=${country}" \
+    -keystore "${keystoreFilename}" -storepass "${keystorePassword}" \
+    -keyalg RSA -keysize 2048 \
+    -alias "${keyAlias}" -keypass "${keyPassword}" \
+    -validity 10000`);
+  });
+  print.success(`${print.checkmark} added ${keystoreFilepath}`);
+  await addTemplateAndPromptIfExisting(toolbox, {
+    target: 'android/keystore.properties',
+    template: 'android/keystore.properties.ejs',
+    props: {
+      keyAlias,
+      keyPassword,
+      keystoreFilepath,
+      keystorePassword,
+    },
+  });
+
+  // prettier-ignore
+  const printDirections = () => {
+    const printCode = msg => print.code(msg, 70);
+    printCode('');
+    printCode(green('Successfully generated Android keystore'));
+    printCode('');
+    printCode(bgYellow(black(bold(` ${_.padEnd('STOP! Go ahead and do the following:', 68, ' ')} `))));
+    printCode(bgYellow(black(` ${_.padEnd('  • upload the generated keystore file to 1Password as a "document"', 68, ' ')} `)));
+    printCode(bgYellow(black(` ${_.padEnd('  • include the KeystorePassword, KeystoreAlias, and KeystorePass', 68, ' ')} `)));
+    printCode('');
+    printCode(cyan(`${gray('KeystoreFile:')} ${keystoreFilepath}`));
+    printCode(cyan(`${gray('KeystorePassword:')} ${keystorePassword}`));
+    printCode(cyan(`${gray('KeystoreAlias:')} ${keyAlias}`));
+    printCode(cyan(`${gray('KeyPassword:')} ${keyPassword}`));
+    printCode('');
+    printCode(dim(`CommonName: ${commonName}`));
+    printCode(dim(`Organizational Unit: ${unit}`));
+    printCode(dim(`Organization: ${org}`));
+    printCode(dim(`City: ${city}`));
+    printCode(dim(`State: ${state}`));
+    printCode(dim(`Country: ${country}`));
+    printCode('');
+    print.newline();
+  }
+  printDirections();
 };
 
 module.exports = command;
