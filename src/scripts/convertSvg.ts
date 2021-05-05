@@ -165,7 +165,7 @@ const isSvgFilePreviouslyProcessed = (content: string): boolean => {
  * @param content
  */
 const parseViewBox = (content: string) => {
-  const search = /viewBox="(\d+) (\d+) (\d+) (\d+)"/g;
+  const search = /viewBox="(\d+\.{0,1}\d*) (\d+\.{0,1}\d*) (\d+\.{0,1}\d*) (\d+\.{0,1}\d*)"/g;
   const matches = search.exec(content);
   if (!matches || !matches) throw new Error('viewbox not found');
   if (matches.length < 5) throw new Error(`viewbox in unexpected format`);
@@ -176,6 +176,7 @@ const parseViewBox = (content: string) => {
     height: Number(matches[4]),
   };
 };
+export const __test__parseViewBox = parseViewBox;
 
 // see: https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/color
 const colorAttributes = ['fill', 'stroke', 'stopColor', 'floodColor', 'lightingColor'];
