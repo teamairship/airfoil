@@ -1,5 +1,4 @@
 import * as _ from 'lodash';
-import * as dashify from 'dashify';
 import { constantCase } from 'constant-case';
 
 import { GluegunToolboxExtended } from '../extensions/extensions';
@@ -12,6 +11,8 @@ import { generateAppCenterContent } from '../scripts/generateAppCenterContent';
 import { getProjectName } from '../utils/meta';
 import { generatePassword } from '../utils/password';
 import { addTemplateAndPromptIfExisting } from '../utils/content';
+
+const { padEnd, kebabCase } = _;
 
 const TYPE_ENV = 'env';
 const TYPE_ADR = 'adr';
@@ -223,7 +224,7 @@ const commandKeystore = async (toolbox: GluegunToolboxExtended) => {
   const { bgYellow, black, bold, gray, cyan, dim, green } = toolbox.print.colors;
 
   const projectName = await loadWhile(getProjectName(toolbox));
-  const keyAlias = `${dashify(projectName)}-dist`;
+  const keyAlias = `${kebabCase(projectName)}-dist`;
   const keystoreFilename = `${keyAlias}.keystore`;
   const keystoreFilepath = `android/app/${keystoreFilename}`;
   const keystorePassword = generatePassword(50);
@@ -267,9 +268,9 @@ const commandKeystore = async (toolbox: GluegunToolboxExtended) => {
     printCode('');
     printCode(green('Successfully generated Android keystore'));
     printCode('');
-    printCode(bgYellow(black(bold(` ${_.padEnd('STOP! Go ahead and do the following:', 68, ' ')} `))));
-    printCode(bgYellow(black(` ${_.padEnd('  • upload the generated keystore file to 1Password as a "document"', 68, ' ')} `)));
-    printCode(bgYellow(black(` ${_.padEnd('  • include the KeystorePassword, KeystoreAlias, and KeystorePass', 68, ' ')} `)));
+    printCode(bgYellow(black(bold(` ${padEnd('STOP! Go ahead and do the following:', 68, ' ')} `))));
+    printCode(bgYellow(black(` ${padEnd('  • upload the generated keystore file to 1Password as a "document"', 68, ' ')} `)));
+    printCode(bgYellow(black(` ${padEnd('  • include the KeystorePassword, KeystoreAlias, and KeystorePass', 68, ' ')} `)));
     printCode('');
     printCode(cyan(`${gray('KeystoreFile:')} ${keystoreFilepath}`));
     printCode(cyan(`${gray('KeystorePassword:')} ${keystorePassword}`));
