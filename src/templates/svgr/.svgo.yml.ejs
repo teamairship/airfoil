@@ -1,5 +1,6 @@
 multipass: true
 
+<!-- See here for a list of what these plugins do: https://github.com/svg/svgo#built-in-plugins -->
 plugins:
   - addAttributesToSVGElement: false
   - addClassesToSVGElement: false
@@ -25,15 +26,15 @@ plugins:
   - removeDimensions: true
   - removeDoctype: true
   - removeEditorsNSData: true
-  - removeElementsByAttr: true
+  - removeElementsByAttr: false
   - removeEmptyAttrs: true
   - removeEmptyContainers: true
   - removeEmptyText: true
   - removeHiddenElems: true
   - removeMetadata: true
   - removeNonInheritableGroupAttrs: true
-  - removeRasterImages
-  - removeStyleElement: true
+  - removeRasterImages: true
+  - removeStyleElement: false
   - removeTitle: true
   - removeUnknownsAndDefaults: true
   - removeUnusedNS: true

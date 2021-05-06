@@ -17,8 +17,12 @@ export const convertSvg = async (toolbox: GluegunToolboxExtended, cleanup = fals
   const outPath = path(OUT_DIR);
   let isPkgInstalled = false;
   const isSvg = f => /\.svg$/.test(f);
-  const isTsx = f => /\.tsx$/.test(f);
-
+  const isTsx = f => /\.tsx$/.test(f) && !/index\.(tsx|js)$/.test(f);
+  const svgFiles = filesystem.list(srcPath).filter(isSvg);
+  const existingFiles = filesystem
+    .list(outPath)
+    .filter(isTsx)
+    .join(',');
   await runTask('🔬 checking some things... ', async () => {
     if (!filesystem.exists(srcPath)) {
       print.error(`${srcPath} does not exist`);
@@ -26,7 +30,6 @@ export const convertSvg = async (toolbox: GluegunToolboxExtended, cleanup = fals
       process.exit(1);
     }
 
-    const svgFiles = filesystem.list(srcPath).filter(isSvg);
     if (!svgFiles.length) {
       print.error(`no .svg files present in ${srcPath}`);
       print.info(yellow(`add .svg files to to ${SRC_DIR} dir and run this cmd again`));
@@ -65,6 +68,8 @@ export const convertSvg = async (toolbox: GluegunToolboxExtended, cleanup = fals
     await cmd(`rm -rf ${SVGR_TEMPLATE_DIR}`);
     await cmd(`rm -rf _temp`);
     await cmd(`rm -rf ${FILENAME_SVGO_CONFIG}`);
+    // remove generated index.tsx file
+    await cmd(`rm -rf ${path(OUT_DIR, 'index.tsx')}`);
     // process the Svg .tsx files with extra goodies
     const svgFiles = filesystem
       .list(outPath)
@@ -72,8 +77,13 @@ export const convertSvg = async (toolbox: GluegunToolboxExtended, cleanup = fals
       .map(f => path(outPath, f));
     await Promise.all(svgFiles.map(file => processConvertedTsxFile(toolbox, file)));
   });
+
+  await runTask('💎 prettifying...', async () => {
+    await cmd(`npx prettier --write \"${outPath}/*.+(tsx|jsx|ts|js)\"`);
+  });
+
   print.success(`${print.checkmark} successfully converted svg files`);
-  print.info(green(parseConvertResults(results, path(), print.checkmark)));
+  print.info(green(parseConvertResults(results, path(), existingFiles)));
 
   if (cleanup) {
     await runTask('🧹 cleaning up...', async () => {
@@ -94,11 +104,19 @@ const parseVersionMajorNumber = (version: string): number => {
   return Number(vStripped.split('.')[0]);
 };
 
-const parseConvertResults = (results: string, cwd: string, checkmark: string) => {
+const parseConvertResults = (results: string, cwd: string, existingFiles: string) => {
   if (!results || !cwd) return '';
-  const lines = String(results).split('/n');
+  const regNewLine = /\r{0,1}\n+/;
+  // strip line up to the last "/" char
+  const regStripLine = /.*\//;
+  const lines = String(results).split(regNewLine);
   const search = new RegExp(cwd, 'g');
-  const linesFormatted = lines.map(l => l.replace(search, '')).map(l => l.replace(/\/app/g, 'app'));
+  const isNewlyGenerated = line => !existingFiles.includes(line.replace(regStripLine, ''));
+  const linesFormatted = lines
+    .filter(isNewlyGenerated)
+    .map(l => l.replace(search, ''))
+    .map(l => l.replace(/\/app/g, 'app'));
+  if (linesFormatted.length === 0) return 'No new files.';
   return linesFormatted.join('\n');
 };
 
