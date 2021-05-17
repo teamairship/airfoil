@@ -1,7 +1,14 @@
 import { GluegunCommand } from 'gluegun';
 import { print } from 'gluegun/print';
-import { Choice, questionProjectName, questionProjectType, Template } from '../constants';
+import {
+  Choice,
+  questionProjectName,
+  questionProjectType,
+  Template,
+  HELP_DESCRIPTION_CMD_INIT,
+} from '../constants';
 import { GluegunToolboxExtended } from '../extensions/extensions';
+import { checkCommandHelp } from '../scripts/help';
 import {
   cloneTemplateRepo,
   initializeGit,
@@ -24,7 +31,9 @@ const templateAssociations: { [key: string]: Template } = {
 const command: GluegunCommand = {
   name: 'init',
   alias: ['i', 'new'],
+  description: HELP_DESCRIPTION_CMD_INIT,
   run: async (toolbox: GluegunToolboxExtended) => {
+    checkCommandHelp(toolbox);
     const { parameters, print, prompt } = toolbox;
     const { title, about, loadWhile } = interfaceHelpers(toolbox);
     const { validateProjectName, checkCocoaPodsInstalled } = validations(toolbox);

@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
 import { constantCase } from 'constant-case';
+import { GluegunCommand } from 'gluegun';
 
 import { GluegunToolboxExtended } from '../extensions/extensions';
 import { generateAdr } from '../scripts/generateAdr';
@@ -11,6 +12,8 @@ import { generateAppCenterContent } from '../scripts/generateAppCenterContent';
 import { getProjectName } from '../utils/meta';
 import { generatePassword } from '../utils/password';
 import { addTemplateAndPromptIfExisting } from '../utils/content';
+import { checkCommandHelp } from '../scripts/help';
+import { HELP_DESCRIPTION_CMD_ADD } from '../constants';
 
 const { padEnd, kebabCase } = _;
 
@@ -22,10 +25,12 @@ const TYPE_KEYSTORE = 'keystore';
 const VALID_TYPES = [TYPE_ENV, TYPE_ADR, TYPE_APPCENTER, TYPE_APPCENTER_ALT, TYPE_KEYSTORE];
 type ENV_TYPE = 'string' | 'boolean';
 
-const command = {
+const command: GluegunCommand = {
   name: 'add',
   alias: ['gen', 'g', 'add', 'a'],
+  description: HELP_DESCRIPTION_CMD_ADD,
   run: async (toolbox: GluegunToolboxExtended) => {
+    checkCommandHelp(toolbox);
     const { parameters } = toolbox;
     const { loadWhile } = interfaceHelpers(toolbox);
     const { checkCurrentDirReactNativeProject } = validations(toolbox);
