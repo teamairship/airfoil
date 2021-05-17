@@ -2,7 +2,7 @@ import { GluegunCommand } from 'gluegun';
 import { GluegunToolboxExtended } from '../extensions/extensions';
 import { interfaceHelpers } from '../utils/interface';
 import { validations } from '../utils/validations';
-import { VERSION_DESCRIPTION } from '../constants';
+import { HELP_DESCRIPTION_CMD_VERSION } from '../constants';
 import { checkCommandHelp } from '../scripts/help';
 
 const VERSION_TYPE_MAJOR = 'major';
@@ -12,7 +12,7 @@ const VERSION_TYPE_PATCH = 'patch';
 const command: GluegunCommand = {
   name: 'version',
   alias: ['v'],
-  description: VERSION_DESCRIPTION,
+  description: HELP_DESCRIPTION_CMD_VERSION,
   run: async (toolbox: GluegunToolboxExtended) => {
     checkCommandHelp(toolbox);
     const { loadWhile } = interfaceHelpers(toolbox);

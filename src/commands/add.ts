@@ -13,7 +13,7 @@ import { getProjectName } from '../utils/meta';
 import { generatePassword } from '../utils/password';
 import { addTemplateAndPromptIfExisting } from '../utils/content';
 import { checkCommandHelp } from '../scripts/help';
-import { ADD_DESCRIPTION } from '../constants';
+import { HELP_DESCRIPTION_CMD_ADD } from '../constants';
 
 const { padEnd, kebabCase } = _;
 
@@ -28,7 +28,7 @@ type ENV_TYPE = 'string' | 'boolean';
 const command: GluegunCommand = {
   name: 'add',
   alias: ['gen', 'g', 'add', 'a'],
-  description: ADD_DESCRIPTION,
+  description: HELP_DESCRIPTION_CMD_ADD,
   run: async (toolbox: GluegunToolboxExtended) => {
     checkCommandHelp(toolbox);
     const { parameters } = toolbox;

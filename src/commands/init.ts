@@ -5,7 +5,7 @@ import {
   questionProjectName,
   questionProjectType,
   Template,
-  INIT_DESCRIPTION,
+  HELP_DESCRIPTION_CMD_INIT,
 } from '../constants';
 import { GluegunToolboxExtended } from '../extensions/extensions';
 import { checkCommandHelp } from '../scripts/help';
@@ -31,7 +31,7 @@ const templateAssociations: { [key: string]: Template } = {
 const command: GluegunCommand = {
   name: 'init',
   alias: ['i', 'new'],
-  description: INIT_DESCRIPTION,
+  description: HELP_DESCRIPTION_CMD_INIT,
   run: async (toolbox: GluegunToolboxExtended) => {
     checkCommandHelp(toolbox);
     const { parameters, print, prompt } = toolbox;

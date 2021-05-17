@@ -5,7 +5,7 @@ import {
   questionFileCategory,
   questionFileName,
   questionTakenFileName,
-  CREATE_DESCRIPTION,
+  HELP_DESCRIPTION_CMD_CREATE,
 } from '../constants';
 import { interfaceHelpers } from '../utils/interface';
 import { validations } from '../utils/validations';
@@ -32,7 +32,7 @@ function getDirectoryName(
 const command: GluegunCommand = {
   name: 'create',
   alias: ['c', 'generate', 'g'],
-  description: CREATE_DESCRIPTION,
+  description: HELP_DESCRIPTION_CMD_CREATE,
   run: async (toolbox: GluegunToolboxExtended) => {
     checkCommandHelp(toolbox);
     const { filesystem, parameters, prompt, print } = toolbox;
