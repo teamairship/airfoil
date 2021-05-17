@@ -38,10 +38,9 @@ To package your CLI up for NPM, do this:
 ```shell
 $ npm login
 $ npm whoami
-$ npm lint
-$ npm test
-(if typescript, run `npm run build` here)
-$ npm publish
+$ npm version [major|minor|patch] # bump the version number - [see docs for more info](https://docs.npmjs.com/cli/v7/commands/npm-version)
+$ git push # Make sure that `develop` and `main` branches are in sync
+$ npm publish # pre-publish script formats, lints, tests, and builds
 ```
 
 ## Dependencies
