@@ -5,9 +5,11 @@ import {
   questionFileCategory,
   questionFileName,
   questionTakenFileName,
+  CREATE_DESCRIPTION,
 } from '../constants';
 import { interfaceHelpers } from '../utils/interface';
 import { validations } from '../utils/validations';
+import { checkCommandHelp } from '../scripts/help';
 
 function getDirectoryName(
   fileCategory: FileCategory,
@@ -30,7 +32,9 @@ function getDirectoryName(
 const command: GluegunCommand = {
   name: 'create',
   alias: ['c', 'generate', 'g'],
+  description: CREATE_DESCRIPTION,
   run: async (toolbox: GluegunToolboxExtended) => {
+    checkCommandHelp(toolbox);
     const { filesystem, parameters, prompt, print } = toolbox;
     const { loadWhile } = interfaceHelpers(toolbox);
     const { checkCurrentDirReactNativeProject } = validations(toolbox);

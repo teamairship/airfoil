@@ -1,15 +1,20 @@
+import { GluegunCommand } from 'gluegun';
 import { GluegunToolboxExtended } from '../extensions/extensions';
 import { interfaceHelpers } from '../utils/interface';
 import { validations } from '../utils/validations';
+import { VERSION_DESCRIPTION } from '../constants';
+import { checkCommandHelp } from '../scripts/help';
 
 const VERSION_TYPE_MAJOR = 'major';
 const VERSION_TYPE_MINOR = 'minor';
 const VERSION_TYPE_PATCH = 'patch';
 
-const command = {
+const command: GluegunCommand = {
   name: 'version',
   alias: ['v'],
+  description: VERSION_DESCRIPTION,
   run: async (toolbox: GluegunToolboxExtended) => {
+    checkCommandHelp(toolbox);
     const { loadWhile } = interfaceHelpers(toolbox);
     const { checkCurrentDirReactNativeProject } = validations(toolbox);
 
