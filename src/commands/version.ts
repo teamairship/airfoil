@@ -27,7 +27,7 @@ const command: GluegunCommand = {
 const updateVersion = async (toolbox: GluegunToolboxExtended) => {
   const { parameters, print, printV } = toolbox;
   const { gray, cyan, yellow, red, green, white } = print.colors;
-  const { cmd, printTask, loadWhile } = interfaceHelpers(toolbox);
+  const { cmd, printTask, loadWhile, sleep } = interfaceHelpers(toolbox);
   const { optUpdate } = toolbox.globalOpts;
 
   const type = parameters.first;
@@ -59,23 +59,22 @@ const updateVersion = async (toolbox: GluegunToolboxExtended) => {
   // update package.json, ios, android version
   // see: https://docs.npmjs.com/cli/v6/commands/npm-version
   // see: https://www.npmjs.com/package/react-native-version
-  task = printTask('🍳 Cooking version number...');
+  task = printTask('🛩  Prepping next prototype for release...');
   await cmd(`npm --no-git-tag-version version ${optUpdate || type}`);
   const newVersionRaw = await cmd('cat package.json | npx json version');
   const newVersion = newVersionRaw.replace('\n', '');
   await cmd(`npx react-native-version --skip-tag --never-amend`);
   task.stop();
 
-  printV.newline();
-  print.info(gray(`New version: ${green(newVersion)}`));
-  printV.newline();
-
-  task = printTask('🎓 Graduating to Git...');
+  task = printTask('📒 Updating Flight Ledger...');
   await cmd(`git tag -a v${newVersion} -m "v${newVersion}"`);
   await cmd(`git add --all`);
-  await cmd(`git commit -m "bump version to ${newVersion}"`);
+  await cmd(`git commit -m "bump version to ${newVersion}" --no-verify`);
+  await sleep(500);
   task.stop();
 
+  printV.newline();
+  print.info(gray(`New version: ${green(newVersion)}`));
   printV.newline();
   printV.success(`${print.checkmark} All done!`);
 };

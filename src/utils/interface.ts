@@ -96,6 +96,13 @@ export const interfaceHelpers = (toolbox: GluegunToolboxExtended) => {
 
   const cmd = (c: string) => system.run(log(c));
 
+  const sleep = (time: number = 1000): Promise<void> =>
+    new Promise(resolve => {
+      setTimeout(() => {
+        resolve();
+      }, time);
+    });
+
   return {
     title,
     about,
@@ -108,6 +115,7 @@ export const interfaceHelpers = (toolbox: GluegunToolboxExtended) => {
     loadWhile,
     cmd,
     log,
+    sleep,
     debug,
   };
 };
