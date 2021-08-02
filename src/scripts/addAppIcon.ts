@@ -71,7 +71,6 @@ class Utils {
       ? filesystem.path(parentPath, ...destFile)
       : filesystem.path(parentPath, destFile);
     const relPath = destPath.replace(filesystem.path(''), '');
-    const onSuccess = () => print.success(`${print.checkmark} added ${relPath}`);
 
     if (optDry) {
       // prettier-ignore
@@ -83,26 +82,20 @@ class Utils {
     if (rounded) compositeImg = fullPathImgMaskRounded;
     if (circle) compositeImg = fullPathImgMaskCircle;
 
-    if (compositeImg) {
-      return (
-        sharp(filesystem.path(imgPath))
+    // compositing needs to happen independently from resizing - see issue: https://github.com/lovell/sharp/issues/1113#issuecomment-363187713
+    const sourceImage = compositeImg
+      ? await sharp(filesystem.path(imgPath))
           // apply a subtractive image mask
           .composite([{ input: compositeImg, blend: 'dest-in' }])
           .png()
           .toBuffer()
-          .then(data =>
-            sharp(data)
-              .resize({ width, height })
-              .toFile(destPath),
-          )
-          .then(onSuccess)
-      );
-    }
+      : filesystem.path(imgPath);
 
-    return sharp(filesystem.path(imgPath))
+    await sharp(sourceImage)
       .resize({ width, height })
-      .toFile(destPath)
-      .then(onSuccess);
+      .toFile(destPath);
+
+    print.success(`${print.checkmark} added ${relPath}`);
   };
 
   public static printInstructions = (toolbox: GluegunToolboxExtended) => () => {
