@@ -14,6 +14,7 @@ import { generatePassword } from '../utils/password';
 import { addTemplateAndPromptIfExisting } from '../utils/content';
 import { checkCommandHelp } from '../scripts/help';
 import { HELP_DESCRIPTION_CMD_ADD } from '../constants';
+import { addAppIcon } from '../scripts/addAppIcon';
 
 const { padEnd, kebabCase } = _;
 
@@ -22,7 +23,9 @@ const TYPE_ADR = 'adr';
 const TYPE_APPCENTER = 'appcenter';
 const TYPE_APPCENTER_ALT = 'app-center';
 const TYPE_KEYSTORE = 'keystore';
-const VALID_TYPES = [TYPE_ENV, TYPE_ADR, TYPE_APPCENTER, TYPE_APPCENTER_ALT, TYPE_KEYSTORE];
+const TYPE_APP_ICON = 'appicon';
+const TYPE_APP_ICON_ALT = 'app-icon';
+const VALID_TYPES = [TYPE_ENV, TYPE_ADR, TYPE_APPCENTER, TYPE_APPCENTER_ALT, TYPE_KEYSTORE, TYPE_APP_ICON, TYPE_APP_ICON_ALT];
 type ENV_TYPE = 'string' | 'boolean';
 
 const command: GluegunCommand = {
@@ -57,6 +60,10 @@ const command: GluegunCommand = {
 
       case TYPE_KEYSTORE:
         return commandKeystore(toolbox);
+
+      case TYPE_APP_ICON:
+      case TYPE_APP_ICON_ALT:
+        return commandAppIcon(toolbox);
 
       default:
         return printInvalidArgs(toolbox);
@@ -221,6 +228,12 @@ const commandAppCenter = async (toolbox: GluegunToolboxExtended) => {
   }
 
   await generateAppCenterContent(toolbox, projectName, appCenterSecret);
+};
+
+const commandAppIcon = async (toolbox: GluegunToolboxExtended) => {
+  const projectName = await getProjectName(toolbox);
+
+  await addAppIcon(toolbox, projectName);
 };
 
 const commandKeystore = async (toolbox: GluegunToolboxExtended) => {

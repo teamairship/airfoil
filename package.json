@@ -37,6 +37,7 @@
     "decamelize": "^5.0.0",
     "gluegun": "latest",
     "lodash": "^4.17.21",
+    "sharp": "^0.28.3",
     "snake-case": "^3.0.4",
     "tmp": "^0.2.1"
   },
