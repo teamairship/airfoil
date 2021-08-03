@@ -1,6 +1,7 @@
 import * as sharp from 'sharp';
-import { APP_ICON_SETTINGS } from '../constants';
+import imageSize from 'image-size';
 
+import { APP_ICON_SETTINGS } from '../constants';
 import { GluegunToolboxExtended } from '../extensions/extensions';
 import { interfaceHelpers } from '../utils/interface';
 
@@ -11,6 +12,7 @@ const PATH_IMG_MASK_ROUNDED = 'assets/img/mask-rounded.png';
 
 export const addAppIcon = async (toolbox: GluegunToolboxExtended, projectName: string) => {
   const { filesystem, print } = toolbox;
+  const { dim, cyan } = print.colors;
   const { dryNotice } = interfaceHelpers(toolbox);
   dryNotice();
 
@@ -21,6 +23,21 @@ export const addAppIcon = async (toolbox: GluegunToolboxExtended, projectName: s
 
   if (!filesystem.exists(PATH_APP_ICON)) {
     print.error(`${PATH_APP_ICON} not found.`);
+    printInstructions();
+    process.exit(1);
+  }
+
+  const dimensions = imageSize(filesystem.path(PATH_APP_ICON));
+  if (dimensions.width !== dimensions.height) {
+    print.error(`${PATH_APP_ICON} must be a square image.`);
+    print.info(dim(`current image is ${cyan(`${dimensions.width}x${dimensions.height}`)}`));
+    printInstructions();
+    process.exit(1);
+  }
+
+  if (dimensions.width < 1024 || dimensions.height < 1024) {
+    print.error(`${PATH_APP_ICON} must be 1024x1024 or larger`);
+    print.info(dim(`current image is ${cyan(`${dimensions.width}x${dimensions.height}`)}`));
     printInstructions();
     process.exit(1);
   }
