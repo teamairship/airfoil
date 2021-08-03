@@ -93,3 +93,53 @@ export const HELP_DESCRIPTION_CMD_INIT =
 
 export const HELP_DESCRIPTION_CMD_VERSION =
   '\nairfoil version [major | minor | patch]\n\nUsage:\n\nairfoil version patch # patch release (0.0.1 -> 0.0.2)\nairfoil version minor # minor release (0.0.2 -> 0.1.0)\nairfoil version major # major release (0.1.0 -> 1.0.0)\nairfoil version -u 4.5.6 # update exact version\n\nUpdates the version in package.json as well as ios/ and android/ directories. For more information, visit the official documentation:\nhttps://airfoil-docs.herokuapp.com/commands/version';
+
+// --------------------------
+// ----- APP ICON SIZES -----
+// --------------------------
+type OS = 'ios' | 'android';
+type AppIconConfig = {
+  filename: string;
+  width: number;
+  height: number;
+  rounded?: boolean;
+  circle?: boolean;
+};
+type AppIconAndroidFlavors = Omit<AppIconConfig, 'width' | 'height'>[];
+type AppIconSettings = {
+  [key in OS]: {
+    iconFolderPath: string;
+    icons: AppIconConfig[];
+    iconFlavors?: AppIconAndroidFlavors;
+  };
+};
+export const APP_ICON_SETTINGS: AppIconSettings = {
+  android: {
+    iconFolderPath: 'android/app/src/main/res',
+    iconFlavors: [
+      { filename: 'ic_launcher.png', rounded: true },
+      { filename: 'ic_launcher_round.png', circle: true },
+    ],
+    icons: [
+      { filename: 'mipmap-hdpi', width: 72, height: 72 },
+      { filename: 'mipmap-mdpi', width: 48, height: 48 },
+      { filename: 'mipmap-xhdpi', width: 96, height: 96 },
+      { filename: 'mipmap-xxhdpi', width: 144, height: 144 },
+      { filename: 'mipmap-xxxhdpi', width: 192, height: 192 },
+    ],
+  },
+  ios: {
+    iconFolderPath: 'ios/%s/Images.xcassets/AppIcon.appiconset',
+    icons: [
+      { filename: 'Icon-App-20x20@2x.png', width: 40, height: 40 },
+      { filename: 'Icon-App-20x20@3x.png', width: 60, height: 60 },
+      { filename: 'Icon-App-29x29@2x.png', width: 58, height: 58 },
+      { filename: 'Icon-App-29x29@3x.png', width: 87, height: 87 },
+      { filename: 'Icon-App-40x40@2x.png', width: 80, height: 80 },
+      { filename: 'Icon-App-40x40@3x.png', width: 120, height: 120 },
+      { filename: 'Icon-App-60x60@2x.png', width: 120, height: 120 },
+      { filename: 'Icon-App-60x60@3x.png', width: 180, height: 180 },
+      { filename: 'ItunesArtwork@2x.png', width: 1024, height: 1024 },
+    ],
+  },
+};
