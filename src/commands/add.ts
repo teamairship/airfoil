@@ -24,8 +24,14 @@ const TYPE_APPCENTER = 'appcenter';
 const TYPE_APPCENTER_ALT = 'app-center';
 const TYPE_KEYSTORE = 'keystore';
 const TYPE_APP_ICON = 'appicon';
-const TYPE_APP_ICON_ALT = 'app-icon';
-const VALID_TYPES = [TYPE_ENV, TYPE_ADR, TYPE_APPCENTER, TYPE_APPCENTER_ALT, TYPE_KEYSTORE, TYPE_APP_ICON, TYPE_APP_ICON_ALT];
+const VALID_TYPES = [
+  TYPE_ENV,
+  TYPE_ADR,
+  TYPE_APPCENTER,
+  TYPE_APPCENTER_ALT,
+  TYPE_KEYSTORE,
+  TYPE_APP_ICON,
+];
 type ENV_TYPE = 'string' | 'boolean';
 
 const command: GluegunCommand = {
@@ -62,7 +68,6 @@ const command: GluegunCommand = {
         return commandKeystore(toolbox);
 
       case TYPE_APP_ICON:
-      case TYPE_APP_ICON_ALT:
         return commandAppIcon(toolbox);
 
       default:
