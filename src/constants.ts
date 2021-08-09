@@ -97,7 +97,6 @@ export const HELP_DESCRIPTION_CMD_VERSION =
 // --------------------------
 // ----- APP ICON SIZES -----
 // --------------------------
-type OS = 'ios' | 'android';
 type AppIconConfig = {
   filename: string;
   width: number;
@@ -107,7 +106,12 @@ type AppIconConfig = {
 };
 type AppIconAndroidFlavors = Omit<AppIconConfig, 'width' | 'height'>[];
 type AppIconSettings = {
-  [key in OS]: {
+  ios: {
+    iconFolderPath: string;
+    iconsetContentsPath: string;
+    icons: AppIconConfig[];
+  };
+  android: {
     iconFolderPath: string;
     icons: AppIconConfig[];
     iconFlavors?: AppIconAndroidFlavors;
@@ -129,7 +133,8 @@ export const APP_ICON_SETTINGS: AppIconSettings = {
     ],
   },
   ios: {
-    iconFolderPath: 'ios/%s/Images.xcassets/AppIcon.appiconset',
+    iconFolderPath: 'ios/__PROJECT_NAME__/Images.xcassets/AppIcon.appiconset',
+    iconsetContentsPath: 'ios/__PROJECT_NAME__/Images.xcassets/AppIcon.appiconset/Contents.json',
     icons: [
       { filename: 'Icon-App-20x20@2x.png', width: 40, height: 40 },
       { filename: 'Icon-App-20x20@3x.png', width: 60, height: 60 },
