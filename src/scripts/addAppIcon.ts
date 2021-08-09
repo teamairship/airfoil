@@ -5,8 +5,8 @@ import { APP_ICON_SETTINGS } from '../constants';
 import { GluegunToolboxExtended } from '../extensions/extensions';
 import { interfaceHelpers } from '../utils/interface';
 
+const BASE_IMG_SIZE = 1024;
 const PATH_APP_ICON = 'AppIcon.png';
-
 const PATH_IMG_MASK_CIRCLE = 'assets/img/mask-circle.png';
 const PATH_IMG_MASK_ROUNDED = 'assets/img/mask-rounded.png';
 
@@ -35,7 +35,7 @@ export const addAppIcon = async (toolbox: GluegunToolboxExtended, projectName: s
     process.exit(1);
   }
 
-  if (dimensions.width < 1024 || dimensions.height < 1024) {
+  if (dimensions.width < BASE_IMG_SIZE || dimensions.height < BASE_IMG_SIZE) {
     print.error(`${PATH_APP_ICON} must be 1024x1024 or larger`);
     print.info(dim(`current image is ${cyan(`${dimensions.width}x${dimensions.height}`)}`));
     printInstructions();
@@ -95,25 +95,48 @@ class Utils {
       return;
     }
 
-    let compositeImg;
-    if (rounded) compositeImg = fullPathImgMaskRounded;
-    if (circle) compositeImg = fullPathImgMaskCircle;
+    let maskImgPath;
+    if (rounded) maskImgPath = fullPathImgMaskRounded;
+    if (circle) maskImgPath = fullPathImgMaskCircle;
 
-    // compositing needs to happen independently from resizing - see issue: https://github.com/lovell/sharp/issues/1113#issuecomment-363187713
-    const sourceImage = compositeImg
-      ? await sharp(filesystem.path(imgPath))
-          // apply a subtractive image mask
-          .composite([{ input: compositeImg, blend: 'dest-in' }])
-          .png()
-          .toBuffer()
+    const source = maskImgPath
+      ? await Utils.toMaskedImg(filesystem.path(imgPath), maskImgPath)
       : filesystem.path(imgPath);
 
-    await sharp(sourceImage)
+    await sharp(source)
       .resize({ width, height })
       .toFile(destPath);
 
     print.success(`${print.checkmark} added ${relPath}`);
   };
+
+  public static async toNormalizedImg(imgPath: string) {
+    if (!imgPath) throw new Error(`Expected imgPath in toNormalizedImg()`);
+
+    const dimensions = imageSize(imgPath);
+    if (dimensions.width === BASE_IMG_SIZE && dimensions.height === BASE_IMG_SIZE) return imgPath;
+
+    return sharp(imgPath)
+      .resize({ width: BASE_IMG_SIZE, height: BASE_IMG_SIZE })
+      .png()
+      .toBuffer();
+  }
+
+  public static async toMaskedImg(sourceImgPath: string, maskImgPath: string): Promise<Buffer> {
+    if (!sourceImgPath) throw new Error(`Expected sourceImgPath in toMaskedImg()`);
+    if (!maskImgPath) throw new Error(`Expected maskImgPath in toMaskedImg()`);
+
+    const imgNormalized = await Utils.toNormalizedImg(sourceImgPath);
+    const maskNormalized = await Utils.toNormalizedImg(maskImgPath);
+
+    return (
+      sharp(imgNormalized)
+        // apply a subtractive image mask
+        .composite([{ input: maskNormalized, blend: 'dest-in' }])
+        .png()
+        .toBuffer()
+    );
+  }
 
   public static printInstructions = (toolbox: GluegunToolboxExtended) => () => {
     const { print } = toolbox;
