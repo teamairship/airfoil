@@ -9,14 +9,23 @@ const BASE_IMG_SIZE = 1024;
 const PATH_APP_ICON = 'AppIcon.png';
 const PATH_IMG_MASK_CIRCLE = 'assets/img/mask-circle.png';
 const PATH_IMG_MASK_ROUNDED = 'assets/img/mask-rounded.png';
+const REG_SLASH_BEGIN = /^\//;
 
 export const addAppIcon = async (toolbox: GluegunToolboxExtended, projectName: string) => {
-  const { filesystem, print } = toolbox;
+  const { filesystem, print, template } = toolbox;
   const { dim, cyan } = print.colors;
   const { dryNotice } = interfaceHelpers(toolbox);
   dryNotice();
 
-  const fullPathAppIconFolderIos = APP_ICON_SETTINGS.ios.iconFolderPath.replace('%s', projectName);
+  const fullPathAppIconFolderIos = APP_ICON_SETTINGS.ios.iconFolderPath.replace(
+    '__PROJECT_NAME__',
+    projectName,
+  );
+  const iosIconsetContentsTarget = APP_ICON_SETTINGS.ios.iconsetContentsPath.replace(
+    '__PROJECT_NAME__',
+    projectName,
+  );
+  const iosIconsetContentsTemplate = '/ios/Images.xcassets/AppIcon.appiconset/Contents.json.ejs';
 
   const printInstructions = Utils.printInstructions(toolbox);
   const processImg = Utils.processImg(toolbox);
@@ -42,6 +51,7 @@ export const addAppIcon = async (toolbox: GluegunToolboxExtended, projectName: s
     process.exit(1);
   }
 
+  // add ios images
   await Promise.all(
     APP_ICON_SETTINGS.ios.icons.map(icon =>
       processImg(PATH_APP_ICON, icon.filename, icon.width, icon.height, {
@@ -50,6 +60,14 @@ export const addAppIcon = async (toolbox: GluegunToolboxExtended, projectName: s
     ),
   );
 
+  // add ios imageset contents.json
+  await template.generate({
+    target: iosIconsetContentsTarget,
+    template: iosIconsetContentsTemplate,
+  });
+  print.success(`${print.checkmark} added ${iosIconsetContentsTarget}`);
+
+  // add android images
   await Promise.all(
     APP_ICON_SETTINGS.android.icons.map(icon =>
       Promise.all(
@@ -87,7 +105,7 @@ class Utils {
     const destPath = Array.isArray(destFile)
       ? filesystem.path(parentPath, ...destFile)
       : filesystem.path(parentPath, destFile);
-    const relPath = destPath.replace(filesystem.path(''), '');
+    const relPath = destPath.replace(filesystem.path(''), '').replace(REG_SLASH_BEGIN, '');
 
     if (optDry) {
       // prettier-ignore
