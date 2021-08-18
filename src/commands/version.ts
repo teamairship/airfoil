@@ -2,7 +2,7 @@ import { GluegunCommand } from 'gluegun';
 import { GluegunToolboxExtended } from '../extensions/extensions';
 import { interfaceHelpers } from '../utils/interface';
 import { validations } from '../utils/validations';
-import { HELP_DESCRIPTION_CMD_VERSION } from '../constants';
+import { HELP_DESCRIPTION_CMD_VERSION } from '../help-descriptions/cmd-version';
 import { checkCommandHelp } from '../scripts/help';
 
 const VERSION_TYPE_MAJOR = 'major';

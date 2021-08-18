@@ -5,8 +5,8 @@ import {
   questionFileCategory,
   questionFileName,
   questionTakenFileName,
-  HELP_DESCRIPTION_CMD_CREATE,
 } from '../constants';
+import { HELP_DESCRIPTION_CMD_CREATE } from '../help-descriptions/cmd-create';
 import { interfaceHelpers } from '../utils/interface';
 import { validations } from '../utils/validations';
 import { checkCommandHelp } from '../scripts/help';

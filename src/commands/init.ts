@@ -1,12 +1,7 @@
 import { GluegunCommand } from 'gluegun';
 import { print } from 'gluegun/print';
-import {
-  Choice,
-  questionProjectName,
-  questionProjectType,
-  Template,
-  HELP_DESCRIPTION_CMD_INIT,
-} from '../constants';
+import { Choice, questionProjectName, questionProjectType, Template } from '../constants';
+import { HELP_DESCRIPTION_CMD_INIT } from '../help-descriptions/cmd-init';
 import { GluegunToolboxExtended } from '../extensions/extensions';
 import { checkCommandHelp } from '../scripts/help';
 import {
