@@ -23,9 +23,11 @@ npm install @airship/airfoil -g
 airfoil <CMD>
 ```
 
-[See Airfoil Documentation](https://airfoil-docs.herokuapp.com/) ([Docs sourcecode](https://github.com/teamairship/airfoil-docs)).
+[See Airfoil Documentation](https://airfoil.teamairship.com/) ([Docs sourcecode](https://github.com/teamairship/airfoil-docs)).
 
 ---
+
+This CLI tool was built with [Gluegun](https://github.com/infinitered/gluegun)
 
 ## Customizing your CLI
 
