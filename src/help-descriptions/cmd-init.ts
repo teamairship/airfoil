@@ -1,7 +1,6 @@
 import { DOCS_URL } from '../constants';
 
-export const HELP_DESCRIPTION_CMD_INIT = `
-airfoil [init | i | new] [nameOfProject]
+export const HELP_DESCRIPTION_CMD_INIT = `airfoil [init | i | new] [nameOfProject]
 
 Usage:
 
