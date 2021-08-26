@@ -1,4 +1,5 @@
 import { GluegunToolboxExtended } from '../extensions/extensions';
+import { DOCS_URL } from '../constants';
 
 export const OPTION_HELP = 'help';
 
@@ -9,6 +10,7 @@ export const checkCommandHelp = (toolbox: GluegunToolboxExtended) => {
 
   if (helpOption) {
     print.info(toolbox.command.description);
-    process.exit(1);
+    print.info(`View official documentation at ${DOCS_URL}`);
+    process.exit(0);
   }
 };

@@ -4,7 +4,7 @@ import { convertSvg } from '../scripts/convertSvg';
 import { interfaceHelpers } from '../utils/interface';
 import { validations } from '../utils/validations';
 import { checkCommandHelp } from '../scripts/help';
-import { HELP_DESCRIPTION_CMD_CONVERT } from '../constants';
+import { HELP_DESCRIPTION_CMD_CONVERT } from '../help-descriptions/cmd-convert';
 
 const TYPE_SVG = 'svg';
 const VALID_TYPES = [TYPE_SVG];

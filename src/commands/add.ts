@@ -13,7 +13,7 @@ import { getProjectName } from '../utils/meta';
 import { generatePassword } from '../utils/password';
 import { addTemplateAndPromptIfExisting } from '../utils/content';
 import { checkCommandHelp } from '../scripts/help';
-import { HELP_DESCRIPTION_CMD_ADD } from '../constants';
+import { HELP_DESCRIPTION_CMD_ADD } from '../help-descriptions/cmd-add';
 import { addAppIcon } from '../scripts/addAppIcon';
 
 const { padEnd, kebabCase } = _;
