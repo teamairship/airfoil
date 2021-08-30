@@ -20,7 +20,6 @@ const { cyan, red, yellow } = print.colors;
 const templateAssociations: { [key: string]: Template } = {
   [Choice.blimp]: Template.blimp,
   [Choice.jet]: Template.jet,
-  [Choice.propeller]: Template.propeller,
 };
 
 const command: GluegunCommand = {
@@ -63,9 +62,6 @@ const createProject = async (
 ) => {
   const { print, filesystem } = toolbox;
   const { log, postInstallInstructions } = interfaceHelpers(toolbox);
-
-  // TODO: remove this when "Propeller" is ready
-  if (template === Template.propeller) return print.info('Coming soon!');
 
   await cloneTemplateRepo(projectName, template, toolbox);
 
