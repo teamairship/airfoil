@@ -10,6 +10,7 @@ export enum TemplateType {
 export const REACT_NATIVE_INIT = 'npx react-native init';
 export const AIRSHIP_EMAIL = 'builders@teamairship.com';
 export const DEFAULT_PROJECT_VERSION = '0.0.1';
+const DOCS_SITE = 'https://airfoil.teamairship.com';
 
 // ------------------------
 // ------- CHOICES --------
@@ -76,23 +77,70 @@ export const questionTakenFileName = {
     "Looks like there's already a file with that name. What would you like to name your file?",
 };
 
+export const questionValidHookName = {
+  type: 'input',
+  name: 'name',
+  message:
+    'When naming a hook, make sure the hook\'s name follows the pattern useHookName (camelcase starting with "use"). What would you like to name your hook?',
+};
+
 // ------------------------
 // ----- DESCRIPTIONS -----
 // ------------------------
-export const HELP_DESCRIPTION_CMD_ADD =
-  '\nairfoil add [env | appcenter | adr | keystore]\n\nUsage:\n\nairfoil add env # if args omitted -> prompts to get ENV key, value\nairfoil add env MY_VAR=mydatahere\nairfoil add appcenter # follow prompts\nairfoil add adr # follow prompts\nairfoil add adr "Choose Cognito for Auth" # specify ADR title as arg1\nairfoil add keystore\n\nFor more information, visit the official documentation:\nhttps://airfoil-docs.herokuapp.com/commands/add';
+export const HELP_DESCRIPTION_CMD_ADD = `airfoil add [adr | appcenter | component | env | hook | keystore ]
 
-export const HELP_DESCRIPTION_CMD_CONVERT =
-  '\nairfoil convert [svg]\n\nUsage:\n\nairfoil convert svg\nairfoil convert svg --cleanup # to remove app/assets/svg after successful conversion\n\nConverts .svg files to .tsx files for use in React Native. For more information, visit the official documentation:\nhttps://airfoil-docs.herokuapp.com/commands/convert';
+Usage:
 
-export const HELP_DESCRIPTION_CMD_CREATE =
-  '\nairfoil [create | c]\n\nUsage:\n\nairfoil create # guides you through a quick wizard\nairfoil create component [ComponentName] [-f folderName]\nairfoil create hook [useHookName] [-f folderName]\n\nCreates a file and places it in the correct directory. Currently supported options:\n- component\n- hook. For more information, visit the official documentation:\nhttps://airfoil-docs.herokuapp.com/commands/create';
+airfoil add adr # follow prompts
+airfoil add adr "Choose Cognito for Auth" # specify ADR title as arg1
+airfoil add appcenter # follow prompts
+airfoil add component [ComponentName] [-f folderName]
+airfoil add env # if args omitted -> prompts to get ENV key, value
+airfoil add env MY_VAR=mydatahere
+airfoil add hook [useHookName] [-f folderName]
+airfoil add keystore
 
-export const HELP_DESCRIPTION_CMD_INIT =
-  '\nairfoil [init | i | new] [nameOfProject]\n\nUsage:\n\nairfoil init myAwesomeApp\nairfoil init # prompts you for the <appName>\n\nInitializes a new React Native project. For more information, visit the official documentation:\nhttps://airfoil-docs.herokuapp.com/commands/init';
+For more information, visit the official documentation:
+${DOCS_SITE}/commands/add
 
-export const HELP_DESCRIPTION_CMD_VERSION =
-  '\nairfoil version [major | minor | patch]\n\nUsage:\n\nairfoil version patch # patch release (0.0.1 -> 0.0.2)\nairfoil version minor # minor release (0.0.2 -> 0.1.0)\nairfoil version major # major release (0.1.0 -> 1.0.0)\nairfoil version -u 4.5.6 # update exact version\n\nUpdates the version in package.json as well as ios/ and android/ directories. For more information, visit the official documentation:\nhttps://airfoil-docs.herokuapp.com/commands/version';
+`;
+
+export const HELP_DESCRIPTION_CMD_CONVERT = `airfoil convert [svg]
+
+Usage:
+
+airfoil convert svg
+airfoil convert svg --cleanup # to remove app/assets/svg after successful conversion
+
+Converts .svg files to .tsx files for use in React Native. For more information, visit the official documentation:
+${DOCS_SITE}/commands/convert
+
+`;
+export const HELP_DESCRIPTION_CMD_INIT = `airfoil init [nameOfProject]
+
+Usage:
+
+airfoil init myAwesomeApp
+airfoil init # prompts you for the <appName>
+
+Initializes a new React Native project. For more information, visit the official documentation:
+${DOCS_SITE}/commands/init
+
+`;
+
+export const HELP_DESCRIPTION_CMD_VERSION = `airfoil version [major | minor | patch]
+
+Usage:
+
+airfoil version patch # patch release (0.0.1 -> 0.0.2)
+airfoil version minor # minor release (0.0.2 -> 0.1.0)
+airfoil version major # major release (0.1.0 -> 1.0.0)
+airfoil version -u 4.5.6 # update exact version
+
+Updates the version in package.json as well as ios/ and android/ directories. For more information, visit the official documentation:
+${DOCS_SITE}/commands/version
+
+`;
 
 // --------------------------
 // ----- APP ICON SIZES -----
