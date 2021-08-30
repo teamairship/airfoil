@@ -9,7 +9,7 @@ export enum TemplateType {
 export const REACT_NATIVE_INIT = 'npx react-native init';
 export const AIRSHIP_EMAIL = 'builders@teamairship.com';
 export const DEFAULT_PROJECT_VERSION = '0.0.1';
-const DOCS_SITE = 'https://airfoil.teamairship.com';
+export const DOCS_URL = 'https://airfoil.teamairship.com';
 
 // ------------------------
 // ------- CHOICES --------
@@ -98,7 +98,7 @@ airfoil add hook [useHookName] [-f folderName]
 airfoil add keystore
 
 For more information, visit the official documentation:
-${DOCS_SITE}/commands/add
+export ${DOCS_URL}/commands/add
 
 `;
 
@@ -110,7 +110,7 @@ airfoil convert svg
 airfoil convert svg --cleanup # to remove app/assets/svg after successful conversion
 
 Converts .svg files to .tsx files for use in React Native. For more information, visit the official documentation:
-${DOCS_SITE}/commands/convert
+export ${DOCS_URL}/commands/convert
 
 `;
 export const HELP_DESCRIPTION_CMD_INIT = `airfoil init [nameOfProject]
@@ -121,7 +121,7 @@ airfoil init myAwesomeApp
 airfoil init # prompts you for the <appName>
 
 Initializes a new React Native project. For more information, visit the official documentation:
-${DOCS_SITE}/commands/init
+export ${DOCS_URL}/commands/init
 
 `;
 
@@ -135,7 +135,7 @@ airfoil version major # major release (0.1.0 -> 1.0.0)
 airfoil version -u 4.5.6 # update exact version
 
 Updates the version in package.json as well as ios/ and android/ directories. For more information, visit the official documentation:
-${DOCS_SITE}/commands/version
+export ${DOCS_URL}/commands/version
 
 `;
 
