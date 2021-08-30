@@ -1,22 +1,21 @@
-import * as _ from 'lodash';
 import { constantCase } from 'constant-case';
 import { GluegunCommand } from 'gluegun';
-
+import kebabCase from 'lodash/kebabCase';
+import padEnd from 'lodash/padEnd';
+import { HELP_DESCRIPTION_CMD_ADD } from '../constants';
 import { GluegunToolboxExtended } from '../extensions/extensions';
+import { addAppIcon } from '../scripts/addAppIcon';
 import { generateAdr } from '../scripts/generateAdr';
-import { generateEnvVar } from '../scripts/generateEnvVar';
-import { interfaceHelpers } from '../utils/interface';
-import { stripQuotes } from '../utils/formatting';
-import { validations } from '../utils/validations';
 import { generateAppCenterContent } from '../scripts/generateAppCenterContent';
+import { generateEnvVar } from '../scripts/generateEnvVar';
+import { generateFile } from '../scripts/generateFile';
+import { checkCommandHelp } from '../scripts/help';
+import { addTemplateAndPromptIfExisting } from '../utils/content';
+import { stripQuotes } from '../utils/formatting';
+import { interfaceHelpers } from '../utils/interface';
 import { getProjectName } from '../utils/meta';
 import { generatePassword } from '../utils/password';
-import { addTemplateAndPromptIfExisting } from '../utils/content';
-import { checkCommandHelp } from '../scripts/help';
-import { HELP_DESCRIPTION_CMD_ADD } from '../help-descriptions/cmd-add';
-import { addAppIcon } from '../scripts/addAppIcon';
-
-const { padEnd, kebabCase } = _;
+import { validations } from '../utils/validations';
 
 const TYPE_ENV = 'env';
 const TYPE_ADR = 'adr';
@@ -24,19 +23,23 @@ const TYPE_APPCENTER = 'appcenter';
 const TYPE_APPCENTER_ALT = 'app-center';
 const TYPE_KEYSTORE = 'keystore';
 const TYPE_APP_ICON = 'appicon';
+const TYPE_COMPONENT = 'component';
+const TYPE_HOOK = 'hook';
 const VALID_TYPES = [
-  TYPE_ENV,
   TYPE_ADR,
+  TYPE_APP_ICON,
   TYPE_APPCENTER,
   TYPE_APPCENTER_ALT,
+  TYPE_COMPONENT,
+  TYPE_ENV,
+  TYPE_HOOK,
   TYPE_KEYSTORE,
-  TYPE_APP_ICON,
 ];
 type ENV_TYPE = 'string' | 'boolean';
 
 const command: GluegunCommand = {
   name: 'add',
-  alias: ['gen', 'g', 'add', 'a'],
+  alias: ['a'],
   description: HELP_DESCRIPTION_CMD_ADD,
   run: async (toolbox: GluegunToolboxExtended) => {
     checkCommandHelp(toolbox);
@@ -69,6 +72,10 @@ const command: GluegunCommand = {
 
       case TYPE_APP_ICON:
         return commandAppIcon(toolbox);
+
+      case TYPE_HOOK:
+      case TYPE_COMPONENT:
+        return generateFile(toolbox);
 
       default:
         return printInvalidArgs(toolbox);
@@ -103,7 +110,7 @@ const promptEnvVal = async (toolbox: GluegunToolboxExtended): Promise<string> =>
 
 const printInvalidArgs = (toolbox: GluegunToolboxExtended) => {
   const { print } = toolbox;
-  print.error(`\`airfoil generate <type>\` expects type to be one of [${VALID_TYPES.join('|')}]`);
+  print.error(`\`airfoil add <type>\` expects type to be one of [${VALID_TYPES.join('|')}]`);
 };
 
 /**
@@ -133,12 +140,12 @@ const commandEnv = async (toolbox: GluegunToolboxExtended) => {
 
   const REG_ENV_ASSIGN = /^.+=.*$/;
   if (REG_ENV_ASSIGN.test(args[0])) {
-    // parse ENV, VAL from `airfoil generate env ENV=VAL`
+    // parse ENV, VAL from `airfoil add env ENV=VAL`
     [envKey, envVal] = nextArg().split('=');
     printArg('ENV name', constantCase(envKey));
     printArg('ENV val', envVal);
   } else {
-    // parse ENV, VAL from `airfoil generate env ENV VAL`
+    // parse ENV, VAL from `airfoil add env ENV VAL`
     // prettier-ignore
     envKey = nextArg(arg => printArg('ENV name', constantCase(arg))) || (await promptEnvKey(toolbox));
     envVal = nextArg(arg => printArg('ENV val', arg)) || (await promptEnvVal(toolbox));
@@ -193,7 +200,7 @@ const commandAdr = async (toolbox: GluegunToolboxExtended) => {
   const { promptQuestion } = interfaceHelpers(toolbox);
   const adrTitle = parameters.second || (await promptQuestion(questionsAdr.adrTitle));
   if (!adrTitle) {
-    print.error(`ADR Title required for \`airfoil generate adr\``);
+    print.error(`ADR Title required for \`airfoil add adr\``);
     process.exit(1);
   }
   const adrStatus: string = await promptQuestion(questionsAdr.adrStatus);

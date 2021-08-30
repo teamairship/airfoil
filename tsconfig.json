@@ -1,20 +1,21 @@
 {
   "compilerOptions": {
-    "allowSyntheticDefaultImports": false,
+    "allowSyntheticDefaultImports": true,
+    "declaration": true,
+    "declarationDir": "build/types",
+    "esModuleInterop": true,
     "experimentalDecorators": true,
+    "inlineSourceMap": true,
     "lib": ["es2015", "scripthost", "es2015.promise", "es2015.generator", "es2015.iterable", "dom"],
     "module": "commonjs",
     "moduleResolution": "node",
     "noImplicitAny": false,
     "noImplicitThis": true,
     "noUnusedLocals": true,
-    "sourceMap": false,
-    "inlineSourceMap": true,
     "outDir": "build",
+    "sourceMap": false,
     "strict": false,
-    "target": "es5",
-    "declaration": true,
-    "declarationDir": "build/types"
+    "target": "es5"
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]

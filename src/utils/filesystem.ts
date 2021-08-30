@@ -1,5 +1,25 @@
 import { GluegunToolboxExtended } from '../extensions/extensions';
 import { toolGetFileContent } from './content';
+import { FileCategory } from '../constants';
+
+export const getDirectoryName = (
+  fileCategory: FileCategory,
+  fileName: string,
+  folderName?: string,
+): string => {
+  const APP_DIRECTORY = 'app/';
+  const folder = `${fileCategory.toLowerCase()}s/`;
+  let subFolder = '';
+  const extension = fileCategory === FileCategory.component ? '.tsx' : '.ts';
+
+  if (fileCategory === FileCategory.component) {
+    subFolder = folderName ? `${folderName}/` : 'common/';
+  } else {
+    subFolder = folderName ? `${folderName}/` : '';
+  }
+
+  return `${APP_DIRECTORY}${folder}${subFolder}${fileName}${extension}`;
+};
 
 export const updateFileWithNewContent = async ({
   filePath,
