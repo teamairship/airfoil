@@ -3,6 +3,8 @@ import { format as formatDate } from 'date-fns';
 
 import { GluegunToolboxExtended } from '../extensions/extensions';
 import { getProjectName } from '../utils/meta';
+import { updateFileWithNewContent } from '../utils/filesystem';
+import { decodeHtmlEntities } from '../utils/formatting';
 
 const PATH_ADRS = 'adr';
 const PATH_ADR_README = 'adr/0000_README.md';
@@ -47,6 +49,12 @@ export const generateAdr = async (
       consequences: adrConsequences,
       createdAt: formatDate(new Date(), 'MMMM do, yyyy'),
     },
+  });
+  await updateFileWithNewContent({
+    filePath: adrFilePath,
+    defaultContent: '',
+    toNewContent: content => decodeHtmlEntities(content),
+    toolbox,
   });
   print.success(`${print.checkmark} Added ${PATH_ADRS}/${adrFileName}`);
 };

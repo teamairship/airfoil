@@ -21,7 +21,7 @@ export const toolGetFileContent = (toolbox: GluegunToolbox) => (
 
   if (!filesystem.exists(filePath)) {
     if (typeof defaultContent === 'string') {
-      // create file
+      // create file - this is to ensure that the file exists for the toolbox.template.generate fnc to work properly
       filesystem.file(filePath);
       return defaultContent;
     }

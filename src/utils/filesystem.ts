@@ -12,7 +12,7 @@ export const updateFileWithNewContent = async ({
   filePath: string;
   defaultContent?: string;
   toNewContent: (content: string) => string;
-  printDiff: (content: string, newContent: string, fileName?: string) => Promise<void>;
+  printDiff?: (content: string, newContent: string, fileName?: string) => Promise<void>;
   toolbox: GluegunToolboxExtended;
   ignoreMissingFile?: boolean;
 }): Promise<void> => {
@@ -25,7 +25,7 @@ export const updateFileWithNewContent = async ({
 
     const newContent = toNewContent(content);
 
-    if (optDry || optVerbose) await printDiff(content, newContent, filePath);
+    if ((optDry || optVerbose) && printDiff) await printDiff(content, newContent, filePath);
     if (optDry) return;
 
     filesystem.write(filePath, newContent);
