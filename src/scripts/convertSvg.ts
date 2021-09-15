@@ -9,7 +9,7 @@ const FILENAME_SVGO_CONFIG = '.svgo.yml';
 
 export const convertSvg = async (toolbox: GluegunToolboxExtended, cleanup = false) => {
   const { print, filesystem } = toolbox;
-  const { yellow, green } = print.colors;
+  const { yellow, green, cyan } = print.colors;
   const { runTask, cmd } = interfaceHelpers(toolbox);
   const { path } = filesystem;
 
@@ -18,21 +18,17 @@ export const convertSvg = async (toolbox: GluegunToolboxExtended, cleanup = fals
   let isPkgInstalled = false;
   const isSvg = f => /\.svg$/.test(f);
   const isTsx = f => /\.tsx$/.test(f) && !/index\.(tsx|js)$/.test(f);
-  const svgFiles = filesystem.list(srcPath).filter(isSvg);
-  const existingFiles = filesystem
-    .list(outPath)
-    .filter(isTsx)
-    .join(',');
   await runTask('🔬 checking some things... ', async () => {
     if (!filesystem.exists(srcPath)) {
-      print.error(`${srcPath} does not exist`);
-      print.info(yellow(`add .svg files to to ${SRC_DIR} dir and run this cmd again`));
+      print.error(`\n${srcPath} does not exist`);
+      print.error(`add .svg files to to ${cyan(SRC_DIR)} dir and run this cmd again`);
       process.exit(1);
     }
 
+    const svgFiles = filesystem.list(srcPath).filter(isSvg);
     if (!svgFiles.length) {
-      print.error(`no .svg files present in ${srcPath}`);
-      print.info(yellow(`add .svg files to to ${SRC_DIR} dir and run this cmd again`));
+      print.error(`\nno .svg files present in ${srcPath}`);
+      print.error(`add .svg files to to ${cyan(SRC_DIR)} dir and run this cmd again`);
       process.exit(1);
     }
 
@@ -54,13 +50,19 @@ export const convertSvg = async (toolbox: GluegunToolboxExtended, cleanup = fals
     });
   }
 
+  // create outPath if not exists
+  filesystem.dir(outPath);
+  // get existing files that have already been converted
+  const existingFiles = filesystem
+    .list(outPath)
+    .filter(isTsx)
+    .join(',');
+
   let results;
   await runTask('💾 converting svg files...', async () => {
     // add templates
     await addSvgrTemplateFile(toolbox);
     await addSvgoConfigFile(toolbox);
-    // create outPath if not exists
-    filesystem.dir(outPath);
     const action = `npx @svgr/cli --out-dir ${outPath} --ext tsx --template ${SVGR_TEMPLATE_DIR} --native --typescript --ignore-existing ${srcPath}`;
     // capture the stdout of the above command, which prints each converted file on a new line
     results = await cmd(action);
