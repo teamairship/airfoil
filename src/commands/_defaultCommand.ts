@@ -9,6 +9,8 @@ import { checkCommandHelp } from '../scripts/help';
 const command: GluegunCommand = {
   name: 'airfoil',
   run: async (toolbox: GluegunToolboxExtended) => {
+    if (process.env.NODE_ENV === 'test') return toolbox;
+
     checkCommandHelp(toolbox);
     const { print, meta, parameters } = toolbox;
 
