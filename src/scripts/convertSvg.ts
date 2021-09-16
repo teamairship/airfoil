@@ -1,4 +1,6 @@
 import * as _ from 'lodash';
+import { GluegunTemplateGenerateOptions } from 'gluegun/build/types/toolbox/template-types';
+
 import { GluegunToolboxExtended } from '../extensions/extensions';
 import { interfaceHelpers } from '../utils/interface';
 
@@ -8,7 +10,7 @@ const SVGR_TEMPLATE_DIR = '_temp/svgrTemplate.js';
 const FILENAME_SVGO_CONFIG = '.svgo.yml';
 
 export const convertSvg = async (toolbox: GluegunToolboxExtended, cleanup = false) => {
-  const { print, filesystem } = toolbox;
+  const { print, filesystem, parameters, log } = toolbox;
   const { yellow, green, cyan } = print.colors;
   const { runTask, cmd } = interfaceHelpers(toolbox);
   const { path } = filesystem;
@@ -81,7 +83,11 @@ export const convertSvg = async (toolbox: GluegunToolboxExtended, cleanup = fals
   });
 
   await runTask('💎 prettifying...', async () => {
-    await cmd(`npx prettier --write \"${outPath}/*.+(tsx|jsx|ts|js)\"`);
+    if (parameters.options.skipPrettier) {
+      log('skipping prettification due to --skip-prettier flag');
+    } else {
+      await cmd(`npx prettier --write \"${outPath}/*.+(tsx|jsx|ts|js)\"`);
+    }
   });
 
   print.success(`${print.checkmark} successfully converted svg files`);
@@ -137,12 +143,39 @@ const addSvgoConfigFile = async (toolbox: GluegunToolboxExtended) => {
 };
 
 const processConvertedTsxFile = async (toolbox: GluegunToolboxExtended, filePath: string) => {
-  const { filesystem, template } = toolbox;
+  const { filesystem, template, log, print } = toolbox;
   let content = filesystem.read(filePath);
-  if (!content) return;
-  if (isSvgFilePreviouslyProcessed(content)) return;
+  if (!content) {
+    log(`no content found at path "${filePath}"`);
+    return;
+  }
+  if (isSvgFilePreviouslyProcessed(content)) {
+    log(`file was previously processed: "${filePath}"`);
+    return;
+  }
 
   const componentName = getComponentName(filePath);
+  content = await onProcessConvertedTsxFile(content, componentName, template.generate);
+
+  if (!content) {
+    print.error(
+      `${print.xmark} post-conversion processing failed for "${filePath}" - please edit this file manually`,
+    );
+    return;
+  }
+
+  filesystem.write(filePath, content);
+};
+
+/**
+ * Given content from a newly-converted svg TSX file, return new content
+ */
+const onProcessConvertedTsxFile = async (
+  oldContent: string,
+  componentName: string,
+  generateTemplate: (options: GluegunTemplateGenerateOptions) => Promise<string>,
+): Promise<string> => {
+  let content = oldContent;
   const { minX, minY, width, height } = parseViewBox(content);
   const colors = findUniqueColors(content);
   const colorPropTypes = getColorPropTypes(colors);
@@ -150,7 +183,7 @@ const processConvertedTsxFile = async (toolbox: GluegunToolboxExtended, filePath
   const colorProps = getColorProps(colors);
   content = updateSvgHead(
     content,
-    await template.generate({
+    await generateTemplate({
       template: 'svgr/svgHeadPartial.tsx.ejs',
       props: { width, height, colorPropTypes },
     }),
@@ -158,7 +191,7 @@ const processConvertedTsxFile = async (toolbox: GluegunToolboxExtended, filePath
   const viewBox = `${minX} ${minY} ${width} ${height}`;
   content = updateSvgLine(
     content,
-    await template.generate({
+    await generateTemplate({
       template: 'svgr/svgLinePartial.tsx.ejs',
       props: { viewBox },
     }),
@@ -166,15 +199,17 @@ const processConvertedTsxFile = async (toolbox: GluegunToolboxExtended, filePath
   content = updateSvgColors(content, colors, colorMap);
   content = updateSvgProps(
     content,
-    await template.generate({
+    await generateTemplate({
       template: 'svgr/svgPropsPartial.tsx.ejs',
       props: { colorProps },
     }),
   );
   content = content.replace(/&#34;/g, '"');
   content = addComponentType(content, componentName);
-  filesystem.write(filePath, content);
+  return content;
 };
+
+export const __test__onProcessConvertedTsxFile = onProcessConvertedTsxFile;
 
 const isSvgFilePreviouslyProcessed = (content: string): boolean => {
   return content.indexOf('(props: SvgProps)') === -1;
@@ -281,7 +316,7 @@ const updateSvgHead = (content: string, newContent: string) => {
  * @param newContent
  */
 const updateSvgLine = (content: string, newContent: string) => {
-  const search = /(<Svg .*>)\n/g;
+  const search = /(<Svg\s{0,1}(.|\n)*?>)\n/g;
   const matches = content.match(search);
   if (!matches || !matches.length || !matches[0]) return '';
   const svgLine = matches[0];
@@ -320,6 +355,8 @@ const getComponentName = (filePath: string): string => {
   const fileName = pathParts[pathParts.length - 1];
   return fileName.split('.')[0];
 };
+
+export const test_getComponentName = getComponentName;
 
 const addComponentType = (content: string, componentName: string) => {
   const typeAlreadyExists = /React.FC<Props>/.test(content);
