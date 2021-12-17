@@ -1,6 +1,6 @@
 {
   "name": "@airship/airfoil",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "airfoil CLI",
   "private": false,
   "types": "build/types/types.d.ts",
