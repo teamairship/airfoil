@@ -13,8 +13,8 @@ const ASPECT_RATIO = HEIGHT / WIDTH;
 
 const SvgLogoCrewbelt: React.FC<Props> = ({
   size = 25,
-  color1 = "#4164FF",
-  color2 = "#323232",
+  color1 = '#4164FF',
+  color2 = '#323232',
   ...props
 }) => {
   return (

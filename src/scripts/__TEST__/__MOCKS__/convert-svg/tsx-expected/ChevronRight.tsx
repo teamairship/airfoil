@@ -10,11 +10,7 @@ const WIDTH = 7;
 const HEIGHT = 11;
 const ASPECT_RATIO = HEIGHT / WIDTH;
 
-const SvgChevronRight: React.FC<Props> = ({
-  size = 25,
-  color = "#5A55CA",
-  ...props
-}) => {
+const SvgChevronRight: React.FC<Props> = ({ size = 25, color = '#5A55CA', ...props }) => {
   return (
     <Svg fill="none" width={size} height={size * ASPECT_RATIO} viewBox="0 0 7 11" {...props}>
       <Path

@@ -10,11 +10,7 @@ const WIDTH = 12;
 const HEIGHT = 17;
 const ASPECT_RATIO = HEIGHT / WIDTH;
 
-const SvgDocument: React.FC<Props> = ({
-  size = 25,
-  color = "#28AD8C",
-  ...props
-}) => {
+const SvgDocument: React.FC<Props> = ({ size = 25, color = '#28AD8C', ...props }) => {
   return (
     <Svg fill="none" width={size} height={size * ASPECT_RATIO} viewBox="0 0 12 17" {...props}>
       <Path

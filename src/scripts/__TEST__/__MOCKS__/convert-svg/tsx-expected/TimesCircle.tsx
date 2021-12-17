@@ -10,11 +10,7 @@ const WIDTH = 16;
 const HEIGHT = 16;
 const ASPECT_RATIO = HEIGHT / WIDTH;
 
-const SvgTimesCircle: React.FC<Props> = ({
-  size = 25,
-  color = "#EC6A76",
-  ...props
-}) => {
+const SvgTimesCircle: React.FC<Props> = ({ size = 25, color = '#EC6A76', ...props }) => {
   return (
     <Svg fill="none" width={size} height={size * ASPECT_RATIO} viewBox="0 0 16 16" {...props}>
       <Path

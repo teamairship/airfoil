@@ -10,11 +10,7 @@ const WIDTH = 24;
 const HEIGHT = 16;
 const ASPECT_RATIO = HEIGHT / WIDTH;
 
-const SvgEyePrivacy: React.FC<Props> = ({
-  size = 25,
-  color = "#5A55CA",
-  ...props
-}) => {
+const SvgEyePrivacy: React.FC<Props> = ({ size = 25, color = '#5A55CA', ...props }) => {
   return (
     <Svg fill="none" width={size} height={size * ASPECT_RATIO} viewBox="0 0 24 16" {...props}>
       <Path

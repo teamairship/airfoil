@@ -10,11 +10,7 @@ const WIDTH = 25;
 const HEIGHT = 25;
 const ASPECT_RATIO = HEIGHT / WIDTH;
 
-const SvgEditProfile: React.FC<Props> = ({
-  size = 25,
-  color = "#fff",
-  ...props
-}) => {
+const SvgEditProfile: React.FC<Props> = ({ size = 25, color = '#fff', ...props }) => {
   return (
     <Svg fill="none" width={size} height={size * ASPECT_RATIO} viewBox="0 0 25 25" {...props}>
       <Path

@@ -10,11 +10,7 @@ const WIDTH = 16;
 const HEIGHT = 18;
 const ASPECT_RATIO = HEIGHT / WIDTH;
 
-const SvgArrowToTop: React.FC<Props> = ({
-  size = 25,
-  color = "#797889",
-  ...props
-}) => {
+const SvgArrowToTop: React.FC<Props> = ({ size = 25, color = '#797889', ...props }) => {
   return (
     <Svg fill="none" width={size} height={size * ASPECT_RATIO} viewBox="0 0 16 18" {...props}>
       <Path
