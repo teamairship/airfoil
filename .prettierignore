@@ -1,0 +1,2 @@
+# IGNORE ALL MOCK FILES - some need to be in a very specific format
+**/__TEST__/__MOCKS__/*

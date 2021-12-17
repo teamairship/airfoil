@@ -7,8 +7,5 @@
   },
   "env": {
     "jest": true
-  },
-  "linterOptions": {
-    "exclude": ["**/__TEST__/__MOCKS__/*"]
   }
 }
