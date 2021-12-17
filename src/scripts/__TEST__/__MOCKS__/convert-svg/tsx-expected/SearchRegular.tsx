@@ -10,7 +10,11 @@ const WIDTH = 512;
 const HEIGHT = 512;
 const ASPECT_RATIO = HEIGHT / WIDTH;
 
-const SvgSearchRegular: React.FC<Props> = ({ size = 25, color = 'currentColor', ...props }) => {
+const SvgSearchRegular: React.FC<Props> = ({
+  size = 25,
+  color = "currentColor",
+  ...props
+}) => {
   return (
     <Svg fill="none" width={size} height={size * ASPECT_RATIO} viewBox="0 0 512 512" {...props}>
       <Path

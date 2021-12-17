@@ -209,7 +209,6 @@ const onProcessConvertedTsxFile = async (
   return content;
 };
 
-// tslint:disable-next-line:variable-name
 export const __test__onProcessConvertedTsxFile = onProcessConvertedTsxFile;
 
 const isSvgFilePreviouslyProcessed = (content: string): boolean => {
@@ -357,7 +356,6 @@ const getComponentName = (filePath: string): string => {
   return fileName.split('.')[0];
 };
 
-// tslint:disable-next-line:variable-name
 export const test_getComponentName = getComponentName;
 
 const addComponentType = (content: string, componentName: string) => {

@@ -10,7 +10,11 @@ const WIDTH = 16;
 const HEIGHT = 16;
 const ASPECT_RATIO = HEIGHT / WIDTH;
 
-const SvgMinusCircle: React.FC<Props> = ({ size = 25, color = '#FF9333', ...props }) => {
+const SvgMinusCircle: React.FC<Props> = ({
+  size = 25,
+  color = "#FF9333",
+  ...props
+}) => {
   return (
     <Svg fill="none" width={size} height={size * ASPECT_RATIO} viewBox="0 0 16 16" {...props}>
       <Path

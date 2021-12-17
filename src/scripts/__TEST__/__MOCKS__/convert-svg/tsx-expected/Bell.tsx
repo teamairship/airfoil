@@ -10,7 +10,11 @@ const WIDTH = 22;
 const HEIGHT = 22;
 const ASPECT_RATIO = HEIGHT / WIDTH;
 
-const SvgBell: React.FC<Props> = ({ size = 25, color = '#4163FF', ...props }) => {
+const SvgBell: React.FC<Props> = ({
+  size = 25,
+  color = "#4163FF",
+  ...props
+}) => {
   return (
     <Svg fill="none" width={size} height={size * ASPECT_RATIO} viewBox="0 0 22 22" {...props}>
       <Path

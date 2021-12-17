@@ -10,7 +10,11 @@ const WIDTH = 23;
 const HEIGHT = 36;
 const ASPECT_RATIO = HEIGHT / WIDTH;
 
-const SvgBolt: React.FC<Props> = ({ size = 25, color = '#fff', ...props }) => {
+const SvgBolt: React.FC<Props> = ({
+  size = 25,
+  color = "#fff",
+  ...props
+}) => {
   return (
     <Svg fill="none" width={size} height={size * ASPECT_RATIO} viewBox="0 0 23 36" {...props}>
       <Path

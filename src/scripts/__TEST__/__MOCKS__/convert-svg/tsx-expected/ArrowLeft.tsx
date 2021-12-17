@@ -10,7 +10,11 @@ const WIDTH = 22;
 const HEIGHT = 21;
 const ASPECT_RATIO = HEIGHT / WIDTH;
 
-const SvgArrowLeft: React.FC<Props> = ({ size = 25, color = '#fff', ...props }) => {
+const SvgArrowLeft: React.FC<Props> = ({
+  size = 25,
+  color = "#fff",
+  ...props
+}) => {
   return (
     <Svg fill="none" width={size} height={size * ASPECT_RATIO} viewBox="0 0 22 21" {...props}>
       <Path

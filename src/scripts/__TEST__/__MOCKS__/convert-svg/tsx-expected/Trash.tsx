@@ -10,7 +10,11 @@ const WIDTH = 14;
 const HEIGHT = 17;
 const ASPECT_RATIO = HEIGHT / WIDTH;
 
-const SvgTrash: React.FC<Props> = ({ size = 25, color = '#D24747', ...props }) => {
+const SvgTrash: React.FC<Props> = ({
+  size = 25,
+  color = "#D24747",
+  ...props
+}) => {
   return (
     <Svg fill="none" width={size} height={size * ASPECT_RATIO} viewBox="0 0 14 17" {...props}>
       <Path

@@ -10,7 +10,11 @@ const WIDTH = 19;
 const HEIGHT = 18;
 const ASPECT_RATIO = HEIGHT / WIDTH;
 
-const SvgStarHalf: React.FC<Props> = ({ size = 25, color = '#5A55CA', ...props }) => {
+const SvgStarHalf: React.FC<Props> = ({
+  size = 25,
+  color = "#5A55CA",
+  ...props
+}) => {
   return (
     <Svg fill="none" width={size} height={size * ASPECT_RATIO} viewBox="0 0 19 18" {...props}>
       <Path

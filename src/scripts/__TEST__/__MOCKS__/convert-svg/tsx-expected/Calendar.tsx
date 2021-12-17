@@ -13,8 +13,8 @@ const ASPECT_RATIO = HEIGHT / WIDTH;
 
 const SvgCalendar: React.FC<Props> = ({
   size = 25,
-  color1 = '#fff',
-  color2 = '#5A55CA',
+  color1 = "#fff",
+  color2 = "#5A55CA",
   ...props
 }) => {
   return (

@@ -10,7 +10,11 @@ const WIDTH = 12;
 const HEIGHT = 16;
 const ASPECT_RATIO = HEIGHT / WIDTH;
 
-const SvgHourglassStart: React.FC<Props> = ({ size = 25, color = '#28AD8C', ...props }) => {
+const SvgHourglassStart: React.FC<Props> = ({
+  size = 25,
+  color = "#28AD8C",
+  ...props
+}) => {
   return (
     <Svg fill="none" width={size} height={size * ASPECT_RATIO} viewBox="0 0 12 16" {...props}>
       <Path

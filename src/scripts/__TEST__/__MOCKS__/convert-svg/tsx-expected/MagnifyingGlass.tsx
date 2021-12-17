@@ -3,6 +3,7 @@ import Svg, { SvgProps, Path } from 'react-native-svg';
 
 interface Props extends SvgProps {
   size?: number;
+  
 }
 
 const WIDTH = 140;
@@ -11,7 +12,7 @@ const ASPECT_RATIO = HEIGHT / WIDTH;
 
 const SvgMagnifyingGlass: React.FC<Props> = ({
   size = 25,
-
+  
   ...props
 }) => {
   return (

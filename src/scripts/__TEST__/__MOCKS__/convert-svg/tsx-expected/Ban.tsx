@@ -10,7 +10,11 @@ const WIDTH = 22;
 const HEIGHT = 23;
 const ASPECT_RATIO = HEIGHT / WIDTH;
 
-const SvgBan: React.FC<Props> = ({ size = 25, color = '#E62C37', ...props }) => {
+const SvgBan: React.FC<Props> = ({
+  size = 25,
+  color = "#E62C37",
+  ...props
+}) => {
   return (
     <Svg fill="none" width={size} height={size * ASPECT_RATIO} viewBox="0 0 22 23" {...props}>
       <Path

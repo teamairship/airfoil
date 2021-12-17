@@ -10,7 +10,11 @@ const WIDTH = 140;
 const HEIGHT = 140;
 const ASPECT_RATIO = HEIGHT / WIDTH;
 
-const SvgAlertTriangle: React.FC<Props> = ({ size = 25, color = '#000', ...props }) => {
+const SvgAlertTriangle: React.FC<Props> = ({
+  size = 25,
+  color = "#000",
+  ...props
+}) => {
   return (
     <Svg fill="none" width={size} height={size * ASPECT_RATIO} viewBox="0 0 140 140" {...props}>
       {'\n  ,,\n  '}
