@@ -65,7 +65,7 @@ export const convertSvg = async (toolbox: GluegunToolboxExtended, cleanup = fals
     // add templates
     await addSvgrTemplateFile(toolbox);
     await addSvgoConfigFile(toolbox);
-    const action = `npx @svgr/cli --out-dir ${outPath} --ext tsx --template ${SVGR_TEMPLATE_DIR} --native --typescript --ignore-existing ${srcPath}`;
+    const action = `npx @svgr/cli@v5.5.0 --out-dir ${outPath} --ext tsx --template ${SVGR_TEMPLATE_DIR} --native --typescript --ignore-existing ${srcPath}`;
     // capture the stdout of the above command, which prints each converted file on a new line
     results = await cmd(action);
     // remove temp templates / config files
