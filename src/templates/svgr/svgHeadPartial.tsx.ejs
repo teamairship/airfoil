@@ -1,9 +1,6 @@
 
-interface Props extends SvgProps {
-  size?: number;
-  <%= props.colorPropTypes %>
-}
+interface Props extends SvgProps {size?: number;<%= props.colorPropTypes %>}
 
 const WIDTH = <%= props.width %>;
 const HEIGHT = <%= props.height %>;
-const ASPECT_RATIO = HEIGHT / WIDTH;
+const ASPECT_RATIO = WIDTH / HEIGHT;
