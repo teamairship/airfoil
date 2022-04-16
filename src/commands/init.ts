@@ -1,15 +1,15 @@
 import { GluegunCommand } from 'gluegun';
 import { print } from 'gluegun/print';
 import { Choice, questionProjectName, questionProjectType, Template } from '../constants';
-import { HELP_DESCRIPTION_CMD_INIT } from '../help-descriptions/cmd-init';
 import { GluegunToolboxExtended } from '../extensions/extensions';
+import { HELP_DESCRIPTION_CMD_INIT } from '../help-descriptions/cmd-init';
 import { checkCommandHelp } from '../scripts/help';
 import {
-  cloneTemplateRepo,
+  copyFilesFromTemplateRepo,
   initializeGit,
   initializeProjectInfo,
+  initializeReactNativeProject,
   installDependencies,
-  renameReactNativeProject,
 } from '../scripts/projectCreation';
 import { interfaceHelpers } from '../utils/interface';
 import { validations } from '../utils/validations';
@@ -63,16 +63,17 @@ const createProject = async (
   const { print, filesystem } = toolbox;
   const { log, postInstallInstructions } = interfaceHelpers(toolbox);
 
-  await cloneTemplateRepo(projectName, template, toolbox);
+  await initializeReactNativeProject(projectName, toolbox);
 
   if (!filesystem.exists(`${projectName}/package.json`)) {
     throw new Error(`Something went wrong. ${projectName}/package.json file not found.`);
   }
 
+  await copyFilesFromTemplateRepo(projectName, template, toolbox);
+
   log(`changing directory to \`${projectName}\``);
   process.chdir(projectName);
 
-  await renameReactNativeProject(projectName, toolbox);
   await installDependencies(toolbox);
   await initializeProjectInfo(projectName, toolbox);
   await initializeGit(toolbox);
