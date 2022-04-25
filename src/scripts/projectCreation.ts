@@ -9,17 +9,61 @@ const decamelize = require('decamelize');
  * @param projectName name of the project
  * @param toolbox Gluegun-supplied toolbox
  */
-export const cloneTemplateRepo = async (
+export const copyFilesFromTemplateRepo = async (
   projectName: string,
   template: Template,
   toolbox: GluegunToolboxExtended,
 ) => {
   const { cmd, printTask } = interfaceHelpers(toolbox);
-  const task = printTask('☀️  Opening hangar door...');
+  const task = printTask('Applying template files...');
+
+  // create temporary directory for cloned template
   const TEMP_DIR = `_AIRFOIL_TEMP_${projectName}`;
+  const SELECTED_TEMPLATE = `${TEMP_DIR}/templates/${template}`;
+
+  // clone repo into temp directory
   await cmd(`git clone ${TEMPLATES_REPO_URL} ${TEMP_DIR}`);
-  await cmd(`mkdir ${projectName}`);
-  await cmd(`cp -r ${TEMP_DIR}/templates/${template}/. ${projectName}`);
+
+  // copy over app directory
+  await cmd(`cp -R ${SELECTED_TEMPLATE}/app/. ${projectName}/app`);
+
+  // replace index.js file
+  await cmd(`rm -rf ${projectName}/index.js`);
+  await cmd(`cp ${SELECTED_TEMPLATE}/index.js ${projectName}`);
+
+  // replace package.json
+  await cmd(`rm -rf ${projectName}/package.json`);
+  await cmd(`cp ${SELECTED_TEMPLATE}/package.json ${projectName}`);
+
+  // replace tsconfig
+  await cmd(`rm -rf ${projectName}/tsconfig.json`);
+  await cmd(`cp ${SELECTED_TEMPLATE}/tsconfig.json ${projectName}`);
+
+  // replace eslint config
+  await cmd(`rm -rf ${projectName}/.eslintrc.js`);
+  await cmd(`cp ${SELECTED_TEMPLATE}/.eslintrc.js ${projectName}`);
+
+  // replace prettier config
+  await cmd(`rm -rf ${projectName}/.prettierrc.js`);
+  await cmd(`cp ${SELECTED_TEMPLATE}/.prettierrc.js ${projectName}`);
+  await cmd(`cp ${SELECTED_TEMPLATE}/.prettierignore ${projectName}`);
+
+  // replace metro config
+  await cmd(`rm -rf ${projectName}/metro.config.js`);
+  await cmd(`cp ${SELECTED_TEMPLATE}/metro.config.js ${projectName}`);
+
+  // delete original App.tsx file
+  await cmd(`rm -rf ${projectName}/App.tsx`);
+
+  // copy gemfile.lock
+  await cmd(`rm -rf ${projectName}/Gemfile.lock`);
+  await cmd(`cp ${SELECTED_TEMPLATE}/Gemfile.lock ${projectName}`);
+
+  // set up react-native-config
+  await cmd(
+    `echo "$(awk 'NR==2{print "apply from: project(\":react-native-config\").projectDir.getPath() + \"/dotenv.gradle\""}1' ${projectName}/android/app/build.gradle)" > ${projectName}/android/app/build.gradle`,
+  );
+
   await cmd(`rm -rf ${TEMP_DIR}`);
   task.stop();
 };
@@ -34,7 +78,7 @@ export const cloneTemplateRepo = async (
  */
 export const initializeGit = async (toolbox: GluegunToolboxExtended) => {
   const { cmd, printTask } = interfaceHelpers(toolbox);
-  const task = printTask('🗺️  Creating flight plan and logging point of origin...');
+  const task = printTask('Setting up git...');
   await cmd(`rm -rf .git`);
   await cmd(`git init`);
   await cmd(`git add --all`);
@@ -49,7 +93,7 @@ export const initializeGit = async (toolbox: GluegunToolboxExtended) => {
  */
 export const installDependencies = async (toolbox: GluegunToolboxExtended) => {
   const { cmd, printTask } = interfaceHelpers(toolbox);
-  const task = printTask('🔧 Checking oil levels and fueling up...');
+  const task = printTask('Installing dependencies and pods...');
   await cmd(`yarn install --ignore-scripts`);
   await cmd(`cd ios && pod install --repo-update && cd ..`);
   task.stop();
@@ -67,7 +111,7 @@ export const initializeProjectInfo = async (
 ) => {
   const { template } = toolbox;
   const { cmd, printTask } = interfaceHelpers(toolbox);
-  const task = printTask('🎛️  Setting altimeter and idling engine...');
+  const task = printTask('Generating Code of Conduct & README, and prettifying...');
   const editPkgJson = `npx json -I -f package.json -e`; // update package.json
   await cmd(`${editPkgJson} 'this.name="${decamelize(projectName, { separator: '-' })}"'`);
   await cmd(`${editPkgJson} 'this.version="${DEFAULT_PROJECT_VERSION}"'`);
@@ -81,19 +125,12 @@ export const initializeProjectInfo = async (
   task.stop();
 };
 
-/**
- * This project deeply renames the react native project using the project name
- * supplied by the user. Since we use cloned repos to create our projects, this
- * ensures that all the correct names are supplied throughout the codebase (e.g.,
- * ./ios/[APP_NAME].xcodeproj, android app folder names, etc.)
- * @param projectName The name of the project
- */
-export const renameReactNativeProject = async (
+export const initializeReactNativeProject = async (
   projectName: string,
   toolbox: GluegunToolboxExtended,
 ) => {
   const { cmd, printTask } = interfaceHelpers(toolbox);
-  const task = printTask('🎙  Registering call sign...');
-  await cmd(`npx react-native-rename ${projectName}`);
+  const task = printTask('Initializing React Native project...');
+  await cmd(`npx react-native init ${projectName} --version 0.68.0 --template react-native-template-typescript`);
   task.stop();
 };
