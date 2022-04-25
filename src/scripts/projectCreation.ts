@@ -27,9 +27,6 @@ export const copyFilesFromTemplateRepo = async (
   // copy over app directory
   await cmd(`cp -R ${SELECTED_TEMPLATE}/app/. ${projectName}/app`);
 
-  // copy over code of conduct
-  await cmd(`cp ${SELECTED_TEMPLATE}/CODE_OF_CONDUCT.md ${projectName}`);
-
   // replace index.js file
   await cmd(`rm -rf ${projectName}/index.js`);
   await cmd(`cp ${SELECTED_TEMPLATE}/index.js ${projectName}`);
@@ -49,6 +46,7 @@ export const copyFilesFromTemplateRepo = async (
   // replace prettier config
   await cmd(`rm -rf ${projectName}/.prettierrc.js`);
   await cmd(`cp ${SELECTED_TEMPLATE}/.prettierrc.js ${projectName}`);
+  await cmd(`cp ${SELECTED_TEMPLATE}/.prettierignore ${projectName}`);
 
   // replace metro config
   await cmd(`rm -rf ${projectName}/metro.config.js`);
@@ -56,6 +54,10 @@ export const copyFilesFromTemplateRepo = async (
 
   // delete original App.tsx file
   await cmd(`rm -rf ${projectName}/App.tsx`);
+
+  // copy gemfile.lock
+  await cmd(`rm -rf ${projectName}/Gemfile.lock`);
+  await cmd(`cp ${SELECTED_TEMPLATE}/Gemfile.lock ${projectName}`);
 
   // set up react-native-config
   await cmd(
@@ -76,7 +78,7 @@ export const copyFilesFromTemplateRepo = async (
  */
 export const initializeGit = async (toolbox: GluegunToolboxExtended) => {
   const { cmd, printTask } = interfaceHelpers(toolbox);
-  const task = printTask('🗺️  Creating flight plan and logging point of origin...');
+  const task = printTask('Setting up git...');
   await cmd(`rm -rf .git`);
   await cmd(`git init`);
   await cmd(`git add --all`);
@@ -91,7 +93,7 @@ export const initializeGit = async (toolbox: GluegunToolboxExtended) => {
  */
 export const installDependencies = async (toolbox: GluegunToolboxExtended) => {
   const { cmd, printTask } = interfaceHelpers(toolbox);
-  const task = printTask('🔧 Checking oil levels and fueling up...');
+  const task = printTask('Installing dependencies and pods...');
   await cmd(`yarn install --ignore-scripts`);
   await cmd(`cd ios && pod install --repo-update && cd ..`);
   task.stop();
@@ -109,7 +111,7 @@ export const initializeProjectInfo = async (
 ) => {
   const { template } = toolbox;
   const { cmd, printTask } = interfaceHelpers(toolbox);
-  const task = printTask('🎛️  Setting altimeter and idling engine...');
+  const task = printTask('Generating Code of Conduct & README, and prettifying...');
   const editPkgJson = `npx json -I -f package.json -e`; // update package.json
   await cmd(`${editPkgJson} 'this.name="${decamelize(projectName, { separator: '-' })}"'`);
   await cmd(`${editPkgJson} 'this.version="${DEFAULT_PROJECT_VERSION}"'`);
@@ -129,6 +131,6 @@ export const initializeReactNativeProject = async (
 ) => {
   const { cmd, printTask } = interfaceHelpers(toolbox);
   const task = printTask('Initializing React Native project...');
-  await cmd(`npx react-native init ${projectName} --template react-native-template-typescript`);
+  await cmd(`npx react-native init ${projectName} --version 0.68.0 --template react-native-template-typescript`);
   task.stop();
 };
